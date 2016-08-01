@@ -1,0 +1,57 @@
+
+
+
+@media (max-width: 480px){
+    .table-action thead {
+    display: none;
+    
+    .table-action tr {
+    border-bottom: 1px solid #dddddd;
+  }
+  .table-action td {
+    border: 0;
+  }
+  }
+  
+  .table-action td:not(:first-child) {
+    display: block;
+  }
+}
+#main{
+    margin-left: 15px;
+}
+.alterar{
+    color: black;
+    font-family: sans-serif;
+    
+}
+
+.middle{
+    
+    display: table-cell;
+    vertical-align: middle;
+    
+    
+}
+
+.tela{
+    height: 500px;
+}
+
+
+.linhaCor{
+    
+    margin-top: 70px;
+}
+
+.msg{
+    margin-top: 50px;
+}
+.excluir{
+    font-size: 25px;
+}
+
+.botao{
+    margin: -20px -10px;;
+    
+}
