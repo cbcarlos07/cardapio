@@ -10,6 +10,7 @@
         <link href="css/style.css" rel="stylesheet">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <link href="src/facebox.css" media="screen" rel="stylesheet" type="text/css" />
+        <link rel="stylesheet" href="css/jquery.datetimepicker.min.css">
         
         <link href="css/example.css" media="screen" rel="stylesheet" type="text/css" />
         <script src="lib/jquery.js" type="text/javascript"></script>
@@ -49,7 +50,7 @@
                                 <input type="hidden" name="acao" value="S">
                                 <div class="form-group col-md-8">
                                     <label for="tipo" class="control-label">Descri&ccedil;&atilde;o do Tipo de Refei&ccedil;&atilde;o</label>
-                                    <input id="tipo" class="form-control" placeholder="Tipo de Refei&ccedil;&atilde;o" name="valor" >
+                                    <input id="datepicker" id="datepicker" class="form-control" placeholder="Tipo de Refei&ccedil;&atilde;o" name="valor" >
                                     
                                 </div>
                                 <div class="form-group col-md-2">
@@ -83,15 +84,17 @@
                                 <?php
                                         if(isset($_POST['valor'])){
                                             $valor = $_POST['valor'];
+                                            if($valor == '')
+                                                $valor = '%';
                                         }else{
-                                            $valor = "";
+                                            $valor = "%";
                                         }
                                         require_once './controller/Cardapio_Controller.class.php';
                                         require_once './servicos/CardapioListIterator.class.php';
                                         require_once './servicos/AgendaListIterator.class.php';
                                         require_once './controller/Agenda_Controller.class.php';
                                         $tc = new Cardapio_Controller();
-                                        $rs = $tc->lista_cardapio(strtoupper($valor));
+                                        $rs = $tc->lista_cardapio($valor);
                                         $i = 0;
                                         $tipoList = new CardapioListIterator($rs);
                                         $cardapio = new Cardapio();
@@ -108,7 +111,7 @@
                                             $codigo_cardapio = $cardapio->getCodigo();
                                             echo "<tr>";
                                             echo "   <td>".$cod_cardapio."</td>";
-                                            echo "   <td><a href='cardapios_alt.php?codigo=$var' rel='facebox[.bolder]' >".$cardapio->getData()."</a></td>";                                            
+                                            echo "   <td>".$cardapio->getData()."</td>";                                            
                                             echo "   <td>".$cardapio->getTipo_Refeicao()->getDescricao()."</td>";                                            
                                             $publish = $cardapio->getPublicado();
                                             if($publish == 'N'){
@@ -170,7 +173,18 @@
         
         
         <script src="js/jquery.min.js"></script>
-        
+        <script src="js/jquery.datetimepicker.full.js"></script>
+        <script>
+            
+            $("#datepicker").datetimepicker({
+                timepicker: false,
+                format: 'd/m/Y',
+                
+            });
+            $.datetimepicker.setLocale('pt-BR');
+            
+            
+        </script>
         <script src="js/bootstrap.min.js"></script>
          <script language=javascript>
             function verifica(Msg)

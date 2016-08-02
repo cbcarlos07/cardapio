@@ -183,14 +183,14 @@ class Cardapio_DAO {
         // $cardapio = null;
          $cardapioList = new CardapioList();
          try {
-             if($desc != ""){
+             if($desc != "%"){
                  $sql_text = "SELECT * FROM DBAADV.INTRA_CARDAPIO C, DBAADV.INTRA_TP_REFEICAO T WHERE  TO_CHAR(C.DT_CARDAPIO,'DD/MM/YYYY') = :DT
-                              AND C.CD_TP_REFEICAO = T.CD_TP_REFEICAO ORDER BY 1"    ;
+                              AND C.CD_TP_REFEICAO = T.CD_TP_REFEICAO ORDER BY 1 DESC"    ;
                  $statement = oci_parse($conexao, $sql_text);
                  
-                 oci_bind_by_name($statement, ":DSTP", $desc,-1);
+                 oci_bind_by_name($statement, ":DT", $desc,-1);
              }else{
-                 $sql_text = "SELECT * FROM DBAADV.INTRA_CARDAPIO C, DBAADV.INTRA_TP_REFEICAO T WHERE C.CD_TP_REFEICAO = T.CD_TP_REFEICAO ORDER BY 1";
+                 $sql_text = "SELECT * FROM DBAADV.INTRA_CARDAPIO C, DBAADV.INTRA_TP_REFEICAO T WHERE C.CD_TP_REFEICAO = T.CD_TP_REFEICAO ORDER BY 1 DESC";
                  $statement = oci_parse($conexao, $sql_text);	
              }
               oci_execute($statement);
