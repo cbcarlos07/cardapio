@@ -20,7 +20,6 @@ function logar(acao){
                 type: "POST",
                 url: "usuario.php",
                 beforeSend: carregando,
-                
                 data: {
                     'usuario' : usuario,
                     'senha'   : senha,
@@ -65,7 +64,7 @@ function carregando(){
 }
 function sucesso(msg){
         var mensagem = $('.mensagem');
-        mensagem.empty().html('<p class="alert alert-success"><strong>OK.</strong> Estamos redirecionando</p>').fadeIn("fast");                
+        mensagem.empty().html('<p class="alert alert-success"><strong>OK.</strong> Estamos redirecionando <img src="img/loading.gif" alt="Carregando..."></p>').fadeIn("fast");                
         setTimeout(function (){
             location.href = "snd.php"
         },1500);
