@@ -97,11 +97,11 @@
                                             $var = $tipo->getCodigo()."|".$url;
                                             echo "<tr>";
                                             echo "   <td>".$tipo->getCodigo()."</td>";
-                                            echo "   <td><a href='tip_altera_reifeicao.php?codigo=$var' rel='facebox[.bolder]' >".$tipo->getDescricao()."</a></td>";                                            
+                                            echo "   <td><a href='tip_altera_refeicao.php?codigo=$var' rel='facebox[.bolder]' >".$tipo->getDescricao()."</a></td>";                                            
                                             echo "   <td>".$tipo->getHorarioInicial()."</td>";
                                             echo "   <td>
                                                         <button data-nome='".$tipo->getDescricao()."' data-id='".$tipo->getCodigo()."' class='delete btn btn-danger'>Excluir</button>
-                                                        <a href='tip_altera_reifeicao.php?codigo=$var' rel='facebox[.bolder]'  class='btn btn-warning'>Alterar </a></td>";
+                                                        <a href='tip_altera_refeicao.php?codigo=$var' rel='facebox[.bolder]'  class='btn btn-warning'>Alterar </a></td>";
                                             echo "</tr>";
                                         }
                                     ?>

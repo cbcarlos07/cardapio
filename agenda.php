@@ -65,13 +65,7 @@
                                 </div>
                                 
                             </form>
-                            <div class="form-group col-md-2">
-                                <form action="cardapio_cad.php" method="post">
-                                    <input type="hidden" name="url" value="<?php echo $url; ?>">
-                                    <button type="submit" class="btn btn-default" >Novo</button></form>
-                                </form>    
-                                    
-                             </div>
+                            
                         </div>
                         <div class="table-responsive row">
                             

@@ -44,7 +44,7 @@
                                       </div>        
                                        <div class="form-group">     
                                            <label class="alterar" for="hora">Horário Final</label>
-                                           <input name="horafinal" id="hora" class="form-control" value="<?php echo $tp->getHorarioFinal(); ?>">
+                                           <input name="horafinal" id="hora1" class="form-control" value="<?php echo $tp->getHorarioFinal(); ?>">
                                       </div>
 
                                         <button class="btn btn-primary" type="submit" value="submit">Salvar</button>
@@ -53,6 +53,45 @@
                                </div>
                             
                 </div>
+        
+        <script src="js/jquery.min.js"></script>        
+        <script src="js/jquery.datetimepicker.full.js"></script>
+        <script>
+            
+            $("#hora").datetimepicker({
+                datepicker: false, 
+                format: 'H:i',
+                allowTimes:[
+                            '06:15', '07:00', '07:15', 
+                            '11:00', '11:15', '14:00', '14:15', '21:00',
+                            '22:00'
+                           ],
+                mask: true           
+                           
+                
+            });
+            $.datetimepicker.setLocale('pt-BR');
+            
+            
+        </script>
+        <script>
+            
+            $("#hora1").datetimepicker({
+                datepicker: false,
+                format: 'H:i',
+                allowTimes:[
+                            '06:15', '07:00', '07:15', 
+                            '11:00', '11:15', '14:00', '14:15', '21:00',
+                            '22:00'
+                           ],
+                mask: true           
+            });
+            $.datetimepicker.setLocale('pt-BR');
+            
+            
+        </script>
+        
+        
     </body> 
     
    

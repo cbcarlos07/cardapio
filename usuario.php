@@ -9,7 +9,7 @@
 $usuario = strtoupper($_POST['usuario']);
 $acao = $_POST['acao'];
 if(isset($_POST['senha'])){
-    $senha = $_POST['senha'];
+    $senha = strtoupper($_POST['senha']);
 }
 require_once './controller/Usuario_Controller.class.php';
 $usuario_Controller = new Usuario_Controller();
