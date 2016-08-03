@@ -27,21 +27,21 @@ class Tipo_Refeicao_Controller {
     }
     
     public function delete($codigo){
-        require '../model/Tipo_Refeicao_DAO.class.php';
+        require_once '../model/Tipo_Refeicao_DAO.class.php';
         $td = new Tipo_Refeicao_DAO();
         $teste = $td->delete($codigo);
         return $teste;
     }
     
      public function  verificarDulicidade($descricao){
-        require '../model/Tipo_Refeicao_DAO.class.php';
+        require_once '../model/Tipo_Refeicao_DAO.class.php';
         $td = new Tipo_Refeicao_DAO();
         $teste = $td->verificarDulicidade($descricao);
         return $teste;
      }
      
      public function  lista_tipo($desc){
-         require 'model/Tipo_Refeicao_DAO.class.php';
+         require_once 'model/Tipo_Refeicao_DAO.class.php';
          $td = new Tipo_Refeicao_DAO();
          $teste = $td->lista_tipo($desc);
          return $teste;

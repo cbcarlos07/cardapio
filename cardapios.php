@@ -124,7 +124,7 @@
                                             echo "   <td class='actions'>
                                                        <button data-nome='".$codigo_cardapio."' data-id='$codigo_cardapio' class='delete btn  btn-danger' title='Excluir card&aacute;pio'>Excluir</button>";
                                             echo "   <td><form action=car_p.php method=post> <input type='hidden' value=".$cardapio->getCodigo()." name=codigo > <input  type='hidden' value=".$url." name=url > <input type='hidden' value=E name=acao >
-                                                        <input type='hidden' value=".$cardapio->getData()." name=data> <input type='hidden' value=".$cardapio->getTipo_Refeicao()->getDescricao()." name=tipo>
+                                                        <input type='hidden' value=".date('d/m/Y',strtotime($cardapio->getData()))." name=data> <input type='hidden' value=".$cardapio->getTipo_Refeicao()->getDescricao()." name=tipo>
                                                         <input type='hidden' value=".$cardapio->getCodigo()." name=codigo>
                                                         <button  type='submit' value='submit' class='btn btn-warning' title='Mostrar os itens adicionados a este card&aacute;pio'>Detalhes</button></form></td>";
                                             echo "   <td><form action=cardapio_copy.php method=post> <input type='hidden' value=".$cardapio->getCodigo()." name=codigo > <input  type='hidden' value=".$url." name=url > <input type='hidden' value=E name=acao >

@@ -67,7 +67,8 @@ function duplicidade(){
     
     $dominio = $_SERVER['HTTP_HOST'];
     $tc   = new Cardapio_Controller();
-    $tste = $tc->verificarDulicidade(date('d/m/Y', strtotime($data)), $tipo);
+    //$tste = $tc->verificarDulicidade(date('d/m/Y', strtotime($data)), $tipo);
+    $tste = $tc->verificarDulicidade($data, $tipo);
     
      if($tste > 0){
         echo "<script>alert('Informações parecidas com essa já foram adicionadas anteriormente' );</script>";
@@ -106,10 +107,11 @@ function inserir(){
     $codigo_novo = $tc->getCodigo();
     $cardapio = new Cardapio();
     $cardapio->setCodigo($codigo_novo);
-    $cardapio->setData(date('d/m/Y', strtotime($data)));
+    $cardapio->setData($data);
     $cardapio->setTipo_Refeicao($tipo);    
     $tste = $tc->insert($cardapio);
     echo "Salvou? $tste";
+    echo "<br>Data no action: ".$data;
     if($tste){
         $dominio = $_SERVER['HTTP_HOST'];
         $urli    = $_SERVER['REQUEST_URI'];

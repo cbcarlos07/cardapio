@@ -35,7 +35,7 @@
                      $_SERVER['REQUEST_URI']  -- url atual; 
                 -->
                 <div class="col-md-12">
-                    <div class="text-center"><h1>TIPOS DE PRATOS</h1></div>
+                    <div class="text-center"><h1>PRATOS</h1></div>
                     <div class="container">
                         <div id="main1" class="row">
                             <form action="pratos.php" method="POST">

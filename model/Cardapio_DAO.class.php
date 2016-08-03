@@ -15,9 +15,10 @@ class Cardapio_DAO {
         $conn = new ConnectionFactory();   
         $conexao = $conn->getConnection();
         $sql_text = "INSERT INTO DBAADV.INTRA_CARDAPIO (CD_CARDAPIO, DT_CARDAPIO, CD_TP_REFEICAO )
-		     VALUES (:CD, :DT, :CDP )";
+		     VALUES (:CD, to_date(:DT,'DD/MM/YYYY'), :CDP )";
         try {
            // echo "Nome: ".
+            //AND to_char(A.DT_ATENDIMENTO,'DD/MM/YYYY') = NVL(:DATA,TO_CHAR(SYSDATE,'DD/MM/YYYY'))
             $codigo      = $cardapio->getCodigo();
             $data        = $cardapio->getData();
             $tipo        = $cardapio->getTipo_Refeicao();
@@ -136,8 +137,12 @@ class Cardapio_DAO {
          $conn = new ConnectionFactory();   
          $conexao = $conn->getConnection();
          $i = 0;
-         $sql_text = "SELECT * FROM DBAADV.INTRA_CARDAPIO I WHERE I.DT_CARDAPIO = :DT AND I.CD_TP_REFEICAO = :CD";
+         $sql_text = "SELECT * FROM DBAADV.INTRA_CARDAPIO I WHERE
+                     to_char(I.DT_CARDAPIO,'DD/MM/YYYY') = NVL(:DT,TO_CHAR(SYSDATE,'DD/MM/YYYY')) AND I.CD_TP_REFEICAO = :CD";
+         //AND to_char(A.DT_ATENDIMENTO,'DD/MM/YYYY') = NVL(:DATA,TO_CHAR(SYSDATE,'DD/MM/YYYY'))
+         echo "<br>Data no dao: ".  $data."<br>";
          try {
+             
            $stmt = oci_parse($conexao, $sql_text);                                            
            oci_bind_by_name($stmt, ":DT", $data);
            oci_bind_by_name($stmt, ":CD", $cd);
