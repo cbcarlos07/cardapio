@@ -50,7 +50,7 @@
                                 <input type="hidden" name="acao" value="S">
                                 <div class="form-group col-md-8">
                                     <label for="tipo" class="control-label">Descri&ccedil;&atilde;o do Tipo de Refei&ccedil;&atilde;o</label>
-                                    <input id="datepicker" id="datepicker" class="form-control" placeholder="Tipo de Refei&ccedil;&atilde;o" name="valor" >
+                                    <input  id="datepicker" class="form-control" placeholder="Tipo de Refei&ccedil;&atilde;o" name="valor" >
                                     
                                 </div>
                                 <div class="form-group col-md-2">

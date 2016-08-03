@@ -10,7 +10,7 @@
         <link href="css/style.css" rel="stylesheet">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <link href="src/facebox.css" media="screen" rel="stylesheet" type="text/css" />
-        
+        <link rel="stylesheet" href="css/jquery.datetimepicker.min.css">
         <link href="css/example.css" media="screen" rel="stylesheet" type="text/css" />
         <script src="lib/jquery.js" type="text/javascript"></script>
         <script src="src/facebox.js" type="text/javascript"></script>
@@ -56,11 +56,11 @@
                                 </div>
                                 <div class="col-md-2">
                                     <label for="hora" class="control-label">Hor&aacute;rio Inicial</label>
-                                    <input id="horainicial" class="form-control" placeholder="Ex.: 12:15" name="horainicial" required="">
+                                    <input id="datepicker" class="form-control" placeholder="Ex.: 12:15" name="horainicial" required="">
                                 </div>
                                 <div class="col-md-2">
                                     <label for="hora" class="control-label">Hor&aacute;rio Final</label>
-                                    <input name="horafinal" data-format="hh:mm" id="hora" class="form-control" placeholder="Ex.: 14:00" name="horafinal" required="">
+                                    <input name="horafinal" data-format="hh:mm" id="datepicker1" class="form-control" placeholder="Ex.: 14:00" name="horafinal" required="">
                                 </div>
                                 <div class="form-group col-md-2">
                                     
@@ -134,7 +134,42 @@
    </div>
    </div>
         
-        <script src="js/jquery.min.js"></script>
+        <script src="js/jquery.min.js"></script>        
+        <script src="js/jquery.datetimepicker.full.js"></script>
+        <script>
+            
+            $("#datepicker").datetimepicker({
+                datepicker: false, 
+                format: 'H:i',
+                allowTimes:[
+                            '06:15', '07:00', '07:15', 
+                            '11:00', '11:15', '14:00', '14:15', '21:00',
+                            '22:00'
+                           ],
+                mask: true           
+                           
+                
+            });
+            $.datetimepicker.setLocale('pt-BR');
+            
+            
+        </script>
+        <script>
+            
+            $("#datepicker1").datetimepicker({
+                datepicker: false,
+                format: 'H:i',
+                allowTimes:[
+                            '06:15', '07:00', '07:15', 
+                            '11:00', '11:15', '14:00', '14:15', '21:00',
+                            '22:00'
+                           ],
+                mask: true           
+            });
+            $.datetimepicker.setLocale('pt-BR');
+            
+            
+        </script>
         
         <script src="js/bootstrap.min.js"></script>
          <script language=javascript>
