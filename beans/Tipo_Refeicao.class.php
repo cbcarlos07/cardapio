@@ -11,7 +11,18 @@ class Tipo_Refeicao {
     private $descricao;
     private $horarioInicial;
     private $horarioFinal;
-    public function getHorarioInicial() {
+    private $prazo;
+    
+    public function getPrazo() {
+        return $this->prazo;
+    }
+
+    public function setPrazo($prazo) {
+        $this->prazo = $prazo;
+        return $this;
+    }
+
+        public function getHorarioInicial() {
         return $this->horarioInicial;
     }
 

@@ -36,6 +36,7 @@ else
 if(isset($_POST['horainicial'])){
 $horai     = $_POST['horainicial'];
 $horaf     = $_POST['horafinal'];
+$prazo     = $_POST['prazo'];
 }
 
 
@@ -89,11 +90,13 @@ function inserir(){
     global $url;
     global $horai;
     global $horaf;
+    global $prazo;
     $tc   = new Tipo_Refeicao_Controller();
     $tipo = new Tipo_Refeicao();
     $tipo->setDescricao(strtoupper($descricao));
     $tipo->setHorarioInicial($horai);
     $tipo->setHorarioFinal($horaf);
+    $tipo->setPrazo($prazo);
     $tste = $tc->insert($tipo);
     if($tste){
         $dominio = $_SERVER['HTTP_HOST'];

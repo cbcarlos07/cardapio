@@ -62,6 +62,10 @@
                                     <label for="hora" class="control-label">Hor&aacute;rio Final</label>
                                     <input name="horafinal" data-format="hh:mm" id="datepicker1" class="form-control" placeholder="Ex.: 14:00" name="horafinal" required="">
                                 </div>
+                                <div class="col-md-2">
+                                    <label for="hora" class="control-label">Prazo</label>
+                                    <input name="prazo" data-format="hh:mm" id="prazo" class="form-control" placeholder="Ex.: 24:00" name="prazo" required="">
+                                </div>
                                 <div class="form-group col-md-2">
                                     
                                     <input type="submit" class="btn btn-primary" value="Salvar">

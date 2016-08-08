@@ -14,19 +14,21 @@ class Tipo_Refeicao_DAO {
         $teste = false;
         $conn = new ConnectionFactory();   
         $conexao = $conn->getConnection();
-        $sql_text = "INSERT INTO DBAADV.INTRA_TP_REFEICAO (CD_TP_REFEICAO, DS_TP_REFEICAO, DS_HORARIO_INICIAL, DS_HORARIO_FINAL)
-		     VALUES (:CDTP, :DSTP, :DSH, :DSHF)";
+        $sql_text = "INSERT INTO DBAADV.INTRA_TP_REFEICAO (CD_TP_REFEICAO, DS_TP_REFEICAO, DS_HORARIO_INICIAL, DS_HORARIO_FINAL, DS_PRAZO)
+		     VALUES (:CDTP, :DSTP, :DSH, :DSHF, :PRAZO)";
         try {
             echo "Nome: ".
             $codigo = $this->getCodigo();
             $descricao = $tp->getDescricao();
             $horario = $tp->getHorarioInicial();
             $horafinal = $tp->getHorarioFinal();
+            $prazo     = $tp->getPrazo();
             $statement = oci_parse($conexao, $sql_text);
             oci_bind_by_name($statement, ":CDTP", $codigo);
 	    oci_bind_by_name($statement, ":DSTP", $descricao);
             oci_bind_by_name($statement, ":DSH", $horario);
             oci_bind_by_name($statement, ":DSHF", $horafinal);
+            oci_bind_by_name($statement, ":PRAZO", $prazo);
             oci_execute($statement,  OCI_COMMIT_ON_SUCCESS);
 	    $teste = true;
             $conn->closeConnection($conexao);
