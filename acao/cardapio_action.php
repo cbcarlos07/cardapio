@@ -11,20 +11,28 @@
  *
  * @author CARLOS
  */
-echo "<meta charset='UTF-8'>";
+//echo "<meta charset='UTF-8'>";
 require '../controller/Cardapio_Controller.class.php';
 require '../beans/Cardapio.class.php';
+$publicado = "";
+$alterado = "";
 
 if(isset($_POST['codigo'])){
     $id        = $_POST['codigo'];
 }else{
     $id = $_GET['codigo'];
 }
+
+
 $descricao = "";
 if(isset($_POST['acao'])){
     $acao      = $_POST['acao'];
 }else{
     $acao = $_GET['acao'];
+}
+
+if(isset($_POST['alterado'])){
+    $alterado      = $_POST['alterado'];
 }
 
 if(isset($_POST['url'])){
@@ -33,28 +41,34 @@ if(isset($_POST['url'])){
     $url = $_GET['url'];
 }
 
-
+if(isset($_POST['descricao'])){
+    $descricao = $_POST['descricao'];
+}else{
+    $descricao =  "";
+}
 
 
 if(isset($_POST['data']))
     $data      = $_POST['data'];
 
 if(isset($_POST['tipo']))
-$tipo      = $_POST['tipo'];
+     $tipo      = $_POST['tipo'];
 
 if(isset($_POST['publicado']))
-        $pubicado = $_POST['publicado'];
+        $publicado = $_POST['publicado'];
 
 
 
-if(($acao == 'S' || $acao == 'A') || $acao == 'C'){
+if(($acao == 'S' ) || $acao == 'C'){
     //echo "Acao igual  = $acao";
     duplicidade();
     
 }else if($acao ==  'E'){
     excluir();
 }else if ($acao == 'P'){
-    publicar();
+    publicar($id, $url, $publicado);
+}else if( $acao == 'A'){
+    alterar();
 }
 
 $codigo_novo = 0;
@@ -102,19 +116,21 @@ function inserir(){
     global $url;
     global $tipo;
     global $data;
+    global $descricao;
     global $codigo_novo;
+    echo "<script>alert($data)</script>";
     $tc   = new Cardapio_Controller();
     $codigo_novo = $tc->getCodigo();
     $cardapio = new Cardapio();
     $cardapio->setCodigo($codigo_novo);
+    $cardapio->setDescricao($descricao);
     $cardapio->setData($data);
     $cardapio->setTipo_Refeicao($tipo);    
     $tste = $tc->insert($cardapio);
     echo "Salvou? $tste";
     echo "<br>Data no action: ".$data;
     if($tste){
-        $dominio = $_SERVER['HTTP_HOST'];
-        $urli    = $_SERVER['REQUEST_URI'];
+        
         header("Location:".$url);
     }
 }
@@ -125,18 +141,21 @@ function alterar(){
     global $url;
     global $tipo;
     global $data;
-   // echo "Url: ".$url;
+    global $descricao;
+    // echo "Url: ".$url;
     $tc   = new Cardapio_Controller();
     $cardapio = new Cardapio();
     $cardapio->setCodigo($id);
     $cardapio->setData($data);
+    $cardapio->setDescricao(strtoupper($descricao));
     $cardapio->setTipo_Refeicao($tipo);    
     $tste = $tc->update($cardapio);
+    echo "Tipo refeicao: $tipo";
     if($tste){
-        $dominio = $_SERVER['HTTP_HOST'];
+        //$dominio = $_SERVER['HTTP_HOST'];
         echo "<script>alert('Alterado com sucesso' );</script>";
         echo "<script>window.location='$url'</script>";
-        //header("Location:".$url);
+        header("Location:".$url);
     }else{
         echo "<br>Nao Alterou eh pra executar o header";
     }
@@ -158,31 +177,33 @@ function excluir(){
     else{
         //echo "Nao existe cadastro: $id";
          $tste = $tc->delete($id);
-        if($tste){
- //           $dominio = $_SERVER['HTTP_HOST'];
+         echo "Teste excluir: $tste";
+        if($tste > 0){
+            //$dominio = $_SERVER['HTTP_HOST'];
 //            //$urli    = $_SERVER['REQUEST_URI'];
             header("Location:".$url);
+            
+        }else{
+            header("Location: ../erro.php");
         }
     }
    
 }
 
-function publicar(){
-    
-    global $id;
-    global $url;
-    global $pubicado;
-    
-   // echo "Url: ".$url;
+function publicar($id, $url, $publicado){
+
+    require_once '../controller/CPP_Controller.class.php';
+
+    $cpp = new CPP_Controller();
     $tc   = new Cardapio_Controller();        
-    $tste = $tc->publicar($id, $pubicado);
+    $tste = $tc->publicar($id, $publicado);
+    $remover = $tc->removeCardapio($id);
+    $novo = $cpp->insertTempCardapio($id);
     if($tste){
-        
-     //   echo "<script>alert('Alterado com sucesso' );</script>";
-     //   echo "<script>window.location='$url'</script>";
-        header("Location:".$url);
+       echo json_encode(array("retorno" => 1));
     }else{
-        echo "<br>Nao Alterou eh pra executar o header";
+      //  echo "<br>Nao Alterou eh pra executar o header";
+       echo json_encode(array("retorno" => 0));
     }
 }
 
@@ -225,19 +246,24 @@ function inserir_copia(){
     global $url;
     global $tipo;
     global $data;
+    global $descricao;
     global $codigo_novo;
+    echo "<script>alert($data)</script>";
     $tc   = new Cardapio_Controller();
     $codigo_novo = $tc->getCodigo();
     $cardapio = new Cardapio();
     $cardapio->setCodigo($codigo_novo);
-    $cardapio->setData(date('d/m/Y', strtotime($data)));
+    $cardapio->setDescricao($descricao);
+    $cardapio->setData($data);
     $cardapio->setTipo_Refeicao($tipo);    
     $tste = $tc->insert($cardapio);
-   // echo "Salvou? $tste";
+    echo "Salvou? $tste";
+    echo "<br>Data no action: ".$data;
     if($tste){
-      return $tste;      
+        header("Location:".$url);
     }
 }
+
 
 
 ?>

@@ -20,4 +20,10 @@ class Usuario_Controller {
         $teste = $ud->recuperarSenha($user);
         return $teste;
     }
+    public function verificarPapel ($login){
+        require_once './model/Usuario_DAO.class.php';
+        $ud = new Usuario_DAO();
+        $teste = $ud->verificarPapel($login);
+        return $teste;
+    }
 }

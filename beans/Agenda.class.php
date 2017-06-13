@@ -10,6 +10,49 @@ class Agenda {
     private $cardapio;
     private $cod_Funcionario;
     private $nm_Funcionario;
+    private $ds_Email;
+    private $refeicao;
+
+    /**
+     * @return mixed
+     */
+    public function getRefeicao()
+    {
+        return $this->refeicao;
+    }
+
+    /**
+     * @param mixed $refeicao
+     * @return Agenda
+     */
+    public function setRefeicao($refeicao)
+    {
+        $this->refeicao = $refeicao;
+        return $this;
+    }
+
+
+
+    /**
+     * @return mixed
+     */
+    public function getDsEmail()
+    {
+        return $this->ds_Email;
+    }
+
+    /**
+     * @param mixed $ds_Email
+     * @return Agenda
+     */
+    public function setDsEmail($ds_Email)
+    {
+        $this->ds_Email = $ds_Email;
+        return $this;
+    }
+
+
+
     
     public function getCardapio() {
         return $this->cardapio;

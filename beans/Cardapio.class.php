@@ -16,7 +16,18 @@ class Cardapio {
     private $data;
     private $tipo_Refeicao;
     private $publicado;
+    private $descricao;
     
+    
+    public function getDescricao() {
+        return $this->descricao;
+    }
+
+    public function setDescricao($descricao) {
+        $this->descricao = $descricao;
+        return $this;
+    }
+
     public function getPublicado() {
         return $this->publicado;
     }

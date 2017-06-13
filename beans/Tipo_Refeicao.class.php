@@ -12,7 +12,17 @@ class Tipo_Refeicao {
     private $horarioInicial;
     private $horarioFinal;
     private $prazo;
-    
+    private $cancelar;
+    public function getCancelar() {
+        return $this->cancelar;
+    }
+
+    public function setCancelar($cancelar) {
+        $this->cancelar = $cancelar;
+        return $this;
+    }
+
+        
     public function getPrazo() {
         return $this->prazo;
     }

@@ -65,6 +65,12 @@ class Tipo_Refeicao_Controller {
           $td = new Tipo_Refeicao_DAO();
           $teste = $td->verificarCadastro($cd);
           return $teste;
-         
+     }
+     
+     public function  getDadosRefeicao($cod, $data){
+          require_once '/model/Tipo_Refeicao_DAO.class.php';
+          $td = new Tipo_Refeicao_DAO();
+          $teste = $td->getDadosRefeicao($cod, $data);
+          return $teste;
      }
 }

@@ -1,10 +1,12 @@
 <?php
+date_default_timezone_set('America/Manaus');
   session_start();
   $_SESSION['login'] = $_SERVER['REQUEST_URI'];
+  
 ?>
 <html>
     <head>
-        <title>Login</title>
+        <title>Login - Sistema Gerenciamento de Card&aacute;pio</title>
         <link rel="stylesheet" href="css/login.css">
         <link rel="stylesheet" href="css/bootstrap.css">
         <!--<script src="js/bootstrap.js"></script>-->

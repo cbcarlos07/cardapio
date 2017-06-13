@@ -66,4 +66,11 @@ class Prato_Controller {
          $teste = $td->verificarCadastro($cd);
          return $teste;
      }
+     
+     public function  lista_prato_combo($desc){
+         require_once  '/model/Prato_DAO.class.php';
+         $td = new Prato_DAO();
+         $teste = $td->lista_prato_combo($desc);
+         return $teste;
+     }
 }

@@ -1,3 +1,40 @@
+<?php
+  session_start();
+
+if(isset($_POST['valor'])){
+    $valor = $_POST['valor'];
+    if($valor == '')
+        $valor = '%';
+}else{
+    $valor = "%";
+}
+
+$pagina = (isset($_POST['pagina'])) ? $_POST['pagina'] : 1;
+
+require_once './controller/Cardapio_Controller.class.php';
+require_once './servicos/CardapioListIterator.class.php';
+require_once './servicos/AgendaListIterator.class.php';
+require_once './controller/Agenda_Controller.class.php';
+$tc = new Cardapio_Controller();
+
+$total = $tc->contarRegistros();
+
+//seta a quantidade de itens por pagina
+$registros = 20;
+
+//calcula o número de páginas arredondando o resultado para cima
+$numPaginas = ceil($total  / $registros);
+
+//variavel para calcular o início da visualização com base na página atual
+$inicio = ($registros*$pagina)-$registros;
+
+$limite = $pagina *  $registros;
+$rs = $tc->lista_cardapio($valor, $inicio, $limite);
+
+
+
+
+?>
 
 
 <html>
@@ -11,9 +48,12 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <link href="src/facebox.css" media="screen" rel="stylesheet" type="text/css" />
         <link rel="stylesheet" href="css/jquery.datetimepicker.min.css">
+        <link rel="stylesheet" href="css/agenda.css">
         
         <link href="css/example.css" media="screen" rel="stylesheet" type="text/css" />
         <script src="lib/jquery.js" type="text/javascript"></script>
+        <script src="js/busca.js" type="text/javascript"></script>
+        
         <script src="src/facebox.js" type="text/javascript"></script>
         <script type="text/javascript">
           jQuery(document).ready(function($) {
@@ -27,8 +67,9 @@
     </head>
     <body>
         <?php 
+        
          include './include/div_nav.php';
-         session_start();
+         
          $_SESSION['url'] = $_SERVER['REQUEST_URI'];
         ?>
         <hr>
@@ -49,8 +90,8 @@
                                 <input type="hidden" name="codigo" value="0">
                                 <input type="hidden" name="acao" value="S">
                                 <div class="form-group col-md-8">
-                                    <label for="tipo" class="control-label">Descri&ccedil;&atilde;o do Tipo de Refei&ccedil;&atilde;o</label>
-                                    <input  id="datepicker" class="form-control" placeholder="Tipo de Refei&ccedil;&atilde;o" name="valor" >
+                                    <label for="tipo" class="control-label">Data da Refei&ccedil;&atilde;o</label>
+                                    <input  type="text" id="datepicker" class="form-control" placeholder="Data da Refei&ccedil;&atilde;o" name="valor" >
                                     
                                 </div>
                                 <div class="form-group col-md-2">
@@ -73,7 +114,8 @@
                                 <thead>
                                     <tr>
                                         <th class="t-small">Id</th>
-                                        <th class="t-small">Data do Card&aacute;pio</th>
+                                        <th class="t-small">Data</th>
+                                        <th class="t-small">Descri&ccedil;&atilde;o</th>
                                         <th class="t-small">Tipo de Card&aacute;pio</th>
                                         <th class="t-small">Publicado</th>
                                         <th class="t-small"><center>Qtde Agendados</center></th>
@@ -81,20 +123,11 @@
                                 
                                     </tr>                                    
                                 </thead>
-                                <?php
-                                        if(isset($_POST['valor'])){
-                                            $valor = $_POST['valor'];
-                                            if($valor == '')
-                                                $valor = '%';
-                                        }else{
-                                            $valor = "%";
-                                        }
-                                        require_once './controller/Cardapio_Controller.class.php';
-                                        require_once './servicos/CardapioListIterator.class.php';
-                                        require_once './servicos/AgendaListIterator.class.php';
-                                        require_once './controller/Agenda_Controller.class.php';
-                                        $tc = new Cardapio_Controller();
-                                        $rs = $tc->lista_cardapio($valor);
+                             
+                                <tbody id="resultado">
+                                    
+                                    <?php 
+
                                         $i = 0;
                                         $tipoList = new CardapioListIterator($rs);
                                         $cardapio = new Cardapio();
@@ -103,15 +136,14 @@
                                             $cod_cardapio = $cardapio->getCodigo();
                                             $ac = new Agenda_Controller();
                                             $total = $ac->getCodigo($cod_cardapio);
-                                     ?>
-                                <tbody>
-                                    <div class="example">
-                                    <?php 
                                             $var = $cardapio->getCodigo()."|".$url;
                                             $codigo_cardapio = $cardapio->getCodigo();
+                                            //$data = date('d/m/Y',strtotime($cardapio->getData()));
+                                            $data = $cardapio->getData();
                                             echo "<tr>";
                                             echo "   <td>".$cod_cardapio."</td>";
-                                            echo "   <td>".$cardapio->getData()."</td>";                                            
+                                            echo "   <td>".$data."</td>";  
+                                            echo "   <td>".$cardapio->getDescricao()."</td>";  
                                             echo "   <td>".$cardapio->getTipo_Refeicao()->getDescricao()."</td>";                                            
                                             $publish = $cardapio->getPublicado();
                                             if($publish == 'N'){
@@ -119,14 +151,24 @@
                                             }else{
                                                 echo "   <td><img src='img/published.png' class=img-responsive title='Publicado'></td>";    
                                             }
-                                            echo "   <td align='center'><a href=agenda.php?codigo=$codigo_cardapio>".$total."</a></td>";                                                
-                                                                                    
+                                            echo "   <td align='center'><a href=agenda.php?codigo=$codigo_cardapio&data=$data&ref=".$cardapio->getTipo_Refeicao()->getCodigo().">".$total."</a></td>";                                                
+                                            echo "   <td>
+                                                        <form action=cardapio_alt.php method=post> <input type='hidden' value=".$cardapio->getCodigo()." name=codigo > <input  type='hidden' value=".$url." name=url > <input type='hidden' value=E name=acao >                                                            
+                                                            <input type='hidden' value=".$_SERVER['REQUEST_URI']." name=url>
+                                                            <input type='hidden' value=".$cardapio->getCodigo()." name=cardapio>
+                                                            <button  type='submit' value='submit' class='btn btn-default' title='Mostrar os itens adicionados a este card&aacute;pio'>Alterar</button>
+                                                        </form>
+                                                     </td>";                                        
                                             echo "   <td class='actions'>
                                                        <button data-nome='".$codigo_cardapio."' data-id='$codigo_cardapio' class='delete btn  btn-danger' title='Excluir card&aacute;pio'>Excluir</button>";
-                                            echo "   <td><form action=car_p.php method=post> <input type='hidden' value=".$cardapio->getCodigo()." name=codigo > <input  type='hidden' value=".$url." name=url > <input type='hidden' value=E name=acao >
-                                                        <input type='hidden' value=".date('d/m/Y',strtotime($cardapio->getData()))." name=data> <input type='hidden' value=".$cardapio->getTipo_Refeicao()->getDescricao()." name=tipo>
+                                            echo "   <td><form action=car_p.php method=post > 
+                                                        <input type='hidden' value=".$cardapio->getCodigo()." name=codigo > <input  type='hidden' value=".$url." name=url > <input type='hidden' value=E name=acao >
+                                                        <input type='hidden' value=".$cardapio->getData()." name=data> <input type='hidden' value=".$cardapio->getTipo_Refeicao()->getDescricao()." name=tipo>
                                                         <input type='hidden' value=".$cardapio->getCodigo()." name=codigo>
-                                                        <button  type='submit' value='submit' class='btn btn-warning' title='Mostrar os itens adicionados a este card&aacute;pio'>Detalhes</button></form></td>";
+                                                        <input type='hidden' value='".false."' name=recarrega>
+                                                        <input type='hidden' value='0' name=alterado>
+                                                        <button  type='submit' value='submit' data-id='$codigo_cardapio'  class='btn btn-warning btn-detail' title='Mostrar os itens adicionados a este card&aacute;pio'>Detalhes</button></form>
+                                                        </td>";
                                             echo "   <td><form action=cardapio_copy.php method=post> <input type='hidden' value=".$cardapio->getCodigo()." name=codigo > <input  type='hidden' value=".$url." name=url > <input type='hidden' value=E name=acao >
                                                         <input type='hidden' value=".$cardapio->getData()." name=data> <input type='hidden' value=".$cardapio->getTipo_Refeicao()->getDescricao()." name=tipo>
                                                         <input type='hidden' value=".$cardapio->getCodigo()." name=codigo>
@@ -136,12 +178,92 @@
                                             echo "</tr>";
                                         }
                                     ?>
-                                        </div>
+                                       
                                 </tbody>
                             </table>
                         </div>
                                 
                     </div>
+
+
+                    <!-- INICIO DA PAGINAÇÃO -->
+                    <div class="footer" style="text-align: center;">
+                            <div id="buttom" >
+                                <div class="col-md-12">
+                                    <ul class="pagination">
+                                        <?php
+
+                                        if($pagina == 1){
+                                            ?>
+                                            <li class="disabled">
+                                                <a href="#"
+                                                   data-url="<?php echo $_SERVER['PHP_SELF']; ?>"
+                                                   data-page="">&lt; Anterior</a>
+                                            </li>
+                                            <?php
+                                        }else{
+                                            ?>
+                                            <li class="page-item">  <a href="#"
+                                                                       data-url="<?php echo $_SERVER['PHP_SELF']; ?>"
+                                                                       data-page="<?php echo $pagina-1; ?>"
+                                                                       class="btn-page">&lt; Anterior</a>
+                                            </li>
+                                            <?php
+                                        }
+
+                                        for($i = 1; $i < $numPaginas + 1; $i++){
+                                            $disabled = "";
+
+                                            if($pagina == $i){
+                                                $disabled = "active";
+                                            }
+                                            ?>
+
+                                            <li class="<?php echo $disabled; ?>">
+                                                <a href="#"
+                                                   data-url="<?php echo $_SERVER['PHP_SELF']; ?>"
+                                                   data-page="<?php echo $i; ?>"
+                                                   class="btn-page"
+                                                ><?php echo $i; ?>
+                                                </a>
+                                            </li>
+
+                                            <?php
+                                        }
+                                        ?>
+                                        <?php
+                                        if($numPaginas > 1){
+                                            ?>
+                                            <?php
+                                            if($pagina == $numPaginas){
+                                                ?>
+                                                <li class="disabled"><a href="#"
+                                                                        data-url="<?php echo $_SERVER['PHP_SELF']; ?>"
+                                                                        data-page="<?php echo $pagina + 1; ?>"
+                                                    >Pr&oacute;ximo &gt; </a>
+                                                </li>
+                                                <?php
+                                            }else {
+                                                ?>
+                                                <li class="next"><a href="#"
+                                                                    data-url="<?php echo $_SERVER['PHP_SELF']; ?>"
+                                                                    data-page="<?php echo $pagina + 1; ?>"
+                                                                    class="btn-page">Pr&oacute;ximo &gt; </a>
+                                                </li>
+                                                <?php
+                                            }
+                                        }
+                                        ?>
+
+                                    </ul>
+                                </div>
+
+
+                            </div>
+                    </div>
+                    <!-- FIM DA PAGINAÇÃO -->
+
+
                 </div>  
             </div>
         </div>
@@ -179,9 +301,11 @@
             $("#datepicker").datetimepicker({
                 timepicker: false,
                 format: 'd/m/Y',
+           
                 
             });
             $.datetimepicker.setLocale('pt-BR');
+           
             
             
         </script>
@@ -202,6 +326,52 @@
                 $('#myModal').modal('show'); // modal aparece
           });
          </script>
+
+        <script>
+
+
+            $('.btn-page').on('click', function(){
+                //alert('Pagina');
+                var url      = $(this).data('url');
+                var pagina   = $(this).data('page');
+                var form     = $('<form action="'+url+'" method="post">'+
+                    '<input type="hidden" name="pagina" value="'+pagina+'">'+
+                    '</form>');
+                $('body').append(form);
+                form.submit();
+
+            });
+        </script>
+
+
+        <script>
+            $('.btn-detail').on('click',function(){
+
+               // alert('enviar');
+                var id = $(this).data('id');
+                $.ajax({
+                    url : 'acao/cpp_action.php',
+                    type: 'post',
+                    dataType: 'json',
+                    data :{
+                        cardapio : id,
+                        acao     : 'B'
+                    },
+                    success : function (data) {
+                       // alert('Retorno: '+data.backup);
+                        console.log("Backup: "+data.backup);
+                        if(data.backup === 1){
+                           // alert('Backup realizado: '+data.backup);
+                            //$('#form-detalhes').submit(); //enviar os valores.
+                        }else{
+                           // alert('problema no backup: '+data.backup);
+                        }
+                    }
+                });
+               // return false;
+                
+            });
+        </script>
          
          
     </body>

@@ -46,6 +46,14 @@
                                            <label class="alterar" for="hora">Horário Final</label>
                                            <input name="horafinal" id="hora1" class="form-control" value="<?php echo $tp->getHorarioFinal(); ?>">
                                       </div>
+                                      <div class="form-group">     
+                                           <label class="alterar" for="hora">Prazo / Horas</label>
+                                           <input type="text" name="prazo" class="form-control" onkeypress="return somenteNumero(event)" title="Somente n&uacute;meros inteiros s&atilde;o permitidos" required=""  value="<?php echo $tp->getPrazo(); ?>"/>
+                                      </div>
+                                      <div class="form-group">     
+                                           <label class="alterar" for="canc">Cancelamento</label>
+                                           <input id="canc" type="text" name="cancelamento" class="form-control" onkeypress="return somenteNumero(event)" title="Somente n&uacute;meros inteiros s&atilde;o permitidos" required=""  value="<?php echo $tp->getCancelar(); ?>"/>
+                                      </div>     
 
                                         <button class="btn btn-primary" type="submit" value="submit">Salvar</button>
                                    </form>
@@ -64,7 +72,7 @@
                 allowTimes:[
                             '06:15', '07:00', '07:15', 
                             '11:00', '11:15', '14:00', '14:15', '21:00',
-                            '22:00'
+                            '22:00','23:00'
                            ],
                 mask: true           
                            
@@ -82,7 +90,7 @@
                 allowTimes:[
                             '06:15', '07:00', '07:15', 
                             '11:00', '11:15', '14:00', '14:15', '21:00',
-                            '22:00'
+                            '22:00','23:00'
                            ],
                 mask: true           
             });
@@ -90,7 +98,16 @@
             
             
         </script>
-        
+        <script language='JavaScript'>
+            function somenteNumero(e){
+                var tecla=(window.event)?event.keyCode:e.which;   
+                if((tecla>47 && tecla<58)) return true;
+                else{
+                    if (tecla==8 || tecla==0) return true;
+                    else  return false;
+                }
+            }
+         </script>
         
     </body> 
     

@@ -1,3 +1,6 @@
+<?php
+  session_start();
+?>
 
 
 <html>
@@ -14,6 +17,7 @@
         <link href="css/example.css" media="screen" rel="stylesheet" type="text/css" />
         <script src="lib/jquery.js" type="text/javascript"></script>
         <script src="src/facebox.js" type="text/javascript"></script>
+        <script src="js/busca.js" type="text/javascript"></script>
         <script type="text/javascript">
           jQuery(document).ready(function($) {
             $('a[rel*=facebox]').facebox({
@@ -41,7 +45,7 @@
                             <form action="pratos.php" method="POST">
                                 <?php 
                                    $url = "".$_SERVER['REQUEST_URI']."";
-                                   session_start();
+                                   
                                    $_SESSION['url'] = $url;
                                 ?>
                                 <input type="hidden" name="url" value="<?php echo $url; ?>">
@@ -49,7 +53,7 @@
                                 <input type="hidden" name="acao" value="S">
                                 <div class="form-group col-md-8">
                                     <label for="tipo" class="control-label">Descri&ccedil;&atilde;o do Tipo de Refei&ccedil;&atilde;o</label>
-                                    <input id="tipo" class="form-control" placeholder="Tipo de Refei&ccedil;&atilde;o" name="valor" >
+                                    <input type="text" id="tipo" class="form-control" placeholder="Tipo de Refei&ccedil;&atilde;o" name="valor" onkeyup="pesquisar('tipo','resultado', 'P',  <?php echo  "'".$url."'"; ?>)">
                                     
                                 </div>
                                 <div class="form-group col-md-2">
@@ -78,8 +82,12 @@
                                 
                                     </tr>                                    
                                 </thead>
-                                <?php
-                                        if(isset($_POST['valor'])){
+                               
+                                <tbody id="resultado">
+                                    
+                                        
+                                    <?php
+                                            if(isset($_POST['valor'])){
                                             $valor = $_POST['valor'];
                                         }else{
                                             $valor = "";
@@ -93,13 +101,6 @@
                                         $prato = new Prato();
                                         while($tipoList->hasNextPrato()){
                                             $prato = $tipoList->getNextPrato();
-                                        
-                                     ?>
-                                <tbody>
-                                    <div class="example">
-                                        
-                                    <?php
-                                            
                                             $var = $prato->getCodigo()."|".$url;
                                             $codigo_prato = $prato->getCodigo();
                                             echo "<tr>";
@@ -112,7 +113,7 @@
                                             echo "</tr>";
                                         }
                                     ?>
-                                        </div>
+                                        
                                 </tbody>
                             </table>
                         </div>

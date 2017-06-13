@@ -14,16 +14,16 @@ class Cardapio_Por_Prato_DAO {
         $teste = false;
         $conn = new ConnectionFactory();   
         $conexao = $conn->getConnection();
-        $sql_text = "INSERT INTO DBAADV.INTRA_CARDAPIO_POR_PRATOS (CD_CARDAPIO, CD_PRATO )
-		     VALUES (:CD, :CDP )";
+        $sql_text = "INSERT INTO DBAADV.INTRA_CARDAPIO_TEMP (CD_CARDAPIO, CD_PRATO )
+		            VALUES (:CD, :CDP )";
         try {
            // echo "Nome: ".            
             $cardapio        = $cp->getCardapio();
             $prato           = $cp->getPrato();
             $statement   = oci_parse($conexao, $sql_text);
-            echo "Cardapio: $cardapio";
+            //echo "Cardapio: $cardapio";
             oci_bind_by_name($statement, ":CD", $cardapio);
-	    oci_bind_by_name($statement, ":CDP", $prato);         
+	        oci_bind_by_name($statement, ":CDP", $prato);
             oci_execute($statement,  OCI_COMMIT_ON_SUCCESS);
 	    $teste = true;
             $conn->closeConnection($conexao);
@@ -32,8 +32,139 @@ class Cardapio_Por_Prato_DAO {
         }
         return $teste;
     }
-    
-    
+
+
+
+    public function insertBackup ($cardapio){
+      //  $testeRemove =$this->deleteBackup($cardapio);
+
+
+            require_once 'ConnectionFactory.class.php';
+            $teste = false;
+            $conn = new ConnectionFactory();
+            $conexao = $conn->getConnection();
+            $sql_text = "BEGIN
+                         
+                          FOR R IN (
+                              SELECT CD_CARDAPIO, CD_PRATO FROM INTRA_CARDAPIO_POR_PRATOS P WHERE P.CD_CARDAPIO = :cardapio
+                            )
+                          LOOP
+                            INSERT INTO INTRA_CARDAPIO_BACKUP (CD_CARDAPIO, CD_PRATO) VALUES (R.CD_CARDAPIO, R.CD_PRATO); 
+                          END  LOOP;
+                        END;";
+            try {
+                $statement   = oci_parse($conexao, $sql_text);
+                //echo "Cardapio: $cardapio";
+                oci_bind_by_name($statement, ":cardapio", $cardapio);
+                oci_execute($statement,  OCI_COMMIT_ON_SUCCESS);
+                $teste = true;
+                $conn->closeConnection($conexao);
+            } catch (PDOException $ex) {
+                echo " Erro: ".$ex->getMessage();
+            }
+            return $teste;
+
+    }
+
+    public function insertCardapio ($cardapio){
+        //  $testeRemove =$this->deleteBackup($cardapio);
+
+
+        require_once 'ConnectionFactory.class.php';
+        $teste = false;
+        $conn = new ConnectionFactory();
+        $conexao = $conn->getConnection();
+        $sql_text = "BEGIN
+                         
+                          FOR R IN (
+                              SELECT CD_CARDAPIO, CD_PRATO FROM INTRA_CARDAPIO_TEMP P WHERE P.CD_CARDAPIO = :cardapio
+                            )
+                          LOOP
+                            INSERT INTO INTRA_CARDAPIO_POR_PRATOS (CD_CARDAPIO, CD_PRATO) VALUES (R.CD_CARDAPIO, R.CD_PRATO); 
+                          END  LOOP;
+                        END;";
+        try {
+            $statement   = oci_parse($conexao, $sql_text);
+            //echo "Cardapio: $cardapio";
+            oci_bind_by_name($statement, ":cardapio", $cardapio);
+            oci_execute($statement,  OCI_COMMIT_ON_SUCCESS);
+            $teste = true;
+            $conn->closeConnection($conexao);
+        } catch (PDOException $ex) {
+            echo " Erro: ".$ex->getMessage();
+        }
+        return $teste;
+
+    }
+
+
+
+
+    public function insertTemp ($cardapio){
+    //$testeRemove =$this->deleteTemp();
+
+    require_once 'ConnectionFactory.class.php';
+    $teste = false;
+    $conn = new ConnectionFactory();
+    $conexao = $conn->getConnection();
+    $sql_text = "BEGIN
+                         
+                          FOR R IN (
+                              SELECT CD_CARDAPIO, CD_PRATO FROM INTRA_CARDAPIO_BACKUP  P WHERE P.CD_CARDAPIO = :cardapio
+                            )
+                          LOOP
+                            INSERT INTO DBAADV.INTRA_CARDAPIO_TEMP (CD_CARDAPIO, CD_PRATO) VALUES (R.CD_CARDAPIO, R.CD_PRATO); 
+                          END  LOOP;
+                        END;";
+    try {
+        $statement   = oci_parse($conexao, $sql_text);
+        //echo "Cardapio: $cardapio";
+        oci_bind_by_name($statement, ":cardapio", $cardapio);
+        oci_execute($statement,  OCI_COMMIT_ON_SUCCESS);
+        $teste = true;
+        $conn->closeConnection($conexao);
+    } catch (PDOException $ex) {
+        echo " Erro: ".$ex->getMessage();
+    }
+    return $teste;
+
+
+}
+
+    public function insertTempCardapio ($cardapio){
+        //$testeRemove =$this->deleteTemp();
+
+        require_once 'ConnectionFactory.class.php';
+        $teste = false;
+        $conn = new ConnectionFactory();
+        $conexao = $conn->getConnection();
+        $sql_text = "BEGIN
+                         
+                          FOR R IN (
+                              SELECT CD_CARDAPIO, CD_PRATO FROM INTRA_CARDAPIO_TEMP  P WHERE P.CD_CARDAPIO = :cardapio
+                            )
+                          LOOP
+                            INSERT INTO DBAADV.INTRA_CARDAPIO_POR_PRATOS (CD_CARDAPIO, CD_PRATO) VALUES (R.CD_CARDAPIO, R.CD_PRATO); 
+                          END  LOOP;
+                        END;";
+        try {
+            $statement   = oci_parse($conexao, $sql_text);
+            //echo "Cardapio: $cardapio";
+            oci_bind_by_name($statement, ":cardapio", $cardapio);
+            oci_execute($statement,  OCI_COMMIT_ON_SUCCESS);
+            $teste = true;
+            $conn->closeConnection($conexao);
+        } catch (PDOException $ex) {
+            echo " Erro: ".$ex->getMessage();
+        }
+        return $teste;
+
+
+    }
+
+
+
+
     public function update (Cardapio $cardapio){
         require_once 'ConnectionFactory.class.php';
         $conn = new ConnectionFactory();   
@@ -49,7 +180,7 @@ class Cardapio_Por_Prato_DAO {
             $tipo        = $cardapio->getTipo_Refeicao();
             $statement   = oci_parse($conexao, $sql_text);
             oci_bind_by_name($statement, ":CD", $codigo);
-	    oci_bind_by_name($statement, ":DT", $data);
+	        oci_bind_by_name($statement, ":DT", $data);
             oci_bind_by_name($statement, ":CDP", $tipo);            
             oci_execute($statement,  OCI_COMMIT_ON_SUCCESS);
             $teste = true;
@@ -92,13 +223,14 @@ class Cardapio_Por_Prato_DAO {
         		return $i;
 	}
         
-      public function delete($cardapio, $prato){
+      public function delete($cardapio, $prato, $nome){
           require_once 'ConnectionFactory.class.php';
+
           $teste = false;
           $conn = new ConnectionFactory();
           $connection = $conn->getConnection();
-          $sql_text = "DELETE FROM DBAADV.INTRA_CARDAPIO_POR_PRATOS WHERE ROWID = :CD";
-          $select = "SELECT ROWID FROM DBAADV.INTRA_CARDAPIO_POR_PRATOS R WHERE CD_CARDAPIO = :CD AND CD_PRATO = :CDP";
+          $sql_text = "DELETE FROM DBAADV.INTRA_CARDAPIO_TEMP WHERE ROWID = :CD";
+          $select = "SELECT ROWID FROM DBAADV.INTRA_CARDAPIO_TEMP R WHERE CD_CARDAPIO = :CD AND CD_PRATO = :CDP";
           try{
               $statement = oci_parse($connection, $select);
               oci_bind_by_name($statement, ":CD", $cardapio);
@@ -114,10 +246,76 @@ class Cardapio_Por_Prato_DAO {
               }
             $teste = true;
           } catch (PDOException $ex) {
-              echo "Erro: ".$ex->getMessage();
+              //echo "Erro: ".$ex->getMessage();
           }
+
+          $this->atualizar($nome, $cardapio);
           return $teste;
       }
+
+    public function deleteBackup($cardapio){
+
+        require_once 'ConnectionFactory.class.php';
+
+        $conn = new ConnectionFactory();
+        $teste = false;
+        $conexao = $conn->getConnection();
+        $sql_text = " TRUNCATE TABLE INTRA_CARDAPIO_BACKUP";
+        try {
+            $statement   = oci_parse($conexao, $sql_text);
+            oci_execute($statement,  OCI_COMMIT_ON_SUCCESS);
+            $teste = true;
+            $conn->closeConnection($conexao);
+        } catch (PDOException $ex) {
+            echo " Erro: ".$ex->getMessage();
+        }
+        return $teste;
+
+    }
+
+    public function deleteTemp(){
+
+        require_once 'ConnectionFactory.class.php';
+
+        $conn = new ConnectionFactory();
+        $teste = false;
+        $conexao = $conn->getConnection();
+        $sql_text = " TRUNCATE TABLE INTRA_CARDAPIO_TEMP";
+        try {
+            $statement   = oci_parse($conexao, $sql_text);
+            oci_execute($statement,  OCI_COMMIT_ON_SUCCESS);
+            $teste = true;
+            $conn->closeConnection($conexao);
+        } catch (PDOException $ex) {
+            echo " Erro: ".$ex->getMessage();
+        }
+        return $teste;
+
+    }
+
+
+    public function atualizar ($nome, $codigo){
+        require_once 'ConnectionFactory.class.php';
+        $conn = new ConnectionFactory();
+        $teste = false;
+        $conexao = $conn->getConnection();
+        $sql_text = "UPDATE DBAADV.INTRA_CARDAPIO SET 
+                     DT_ATUALIZACAO      = SYSDATE 
+                    ,NM_USUARIO          = :USUARIO                    
+                     WHERE  CD_CARDAPIO = :CD ";
+        try {
+
+            $statement   = oci_parse($conexao, $sql_text);
+            oci_bind_by_name($statement, ":USUARIO", $nome);
+            oci_bind_by_name($statement, ":CD", $codigo);
+            oci_execute($statement,  OCI_COMMIT_ON_SUCCESS);
+            $teste = true;
+            $conn->closeConnection($conexao);
+        } catch (PDOException $ex) {
+            echo " Erro: ".$ex->getMessage();
+        }
+        return $teste;
+    }
      
       public function  verificarDulicidade($card, $prato){
           require_once  'ConnectionFactory.class.php';
@@ -151,7 +349,7 @@ class Cardapio_Por_Prato_DAO {
          try {
              
                  $sql_text = "    SELECT      C.CD_CARDAPIO, P.CD_PRATO, P.NM_PRATO, T.D_TIPO_PRATO, P.DS_INGREDIENTE 
-                                    FROM     DBAADV.INTRA_CARDAPIO_POR_PRATOS C
+                                    FROM     DBAADV.INTRA_CARDAPIO_TEMP C
                                             ,DBAADV.INTRA_PRATOS              P         
                                             ,DBAADV.INTRA_CARDAPIO            I  
                                             ,DBAADV.INTRA_TIPO_PRATO          T
@@ -195,8 +393,178 @@ class Cardapio_Por_Prato_DAO {
          }
          return $cardapioList;
     }
-    
-    
+
+    public function  lista_pratos_1($cardapio, $tipo_prato){
+        require_once 'ConnectionFactory.class.php';
+        require_once  '../servicos/CPPList.class.php';
+        require_once '../beans/Cardapio_Por_Prato.class.php';
+        $conn = new ConnectionFactory();
+        $conexao = $conn->getConnection();
+        // $cardapio = null;
+        $cardapioList = new CPPList();
+        try {
+
+            $sql_text = "    SELECT      C.CD_CARDAPIO, P.CD_PRATO, P.NM_PRATO, T.D_TIPO_PRATO, P.DS_INGREDIENTE 
+                                    FROM     DBAADV.INTRA_CARDAPIO_TEMP C
+                                            ,DBAADV.INTRA_PRATOS              P         
+                                            ,DBAADV.INTRA_CARDAPIO            I  
+                                            ,DBAADV.INTRA_TIPO_PRATO          T
+                                 WHERE      C.CD_PRATO     = P.CD_PRATO
+                                       AND  C.CD_CARDAPIO  = I.CD_CARDAPIO
+                                       AND  P.CD_TIPO_PRATO = T.CD_TIPO_PRATO
+                                       AND  C.CD_CARDAPIO = :CD
+                                       AND  T.CD_TIPO_PRATO = :CDTP
+                                 ORDER BY P.CD_TIPO_PRATO"    ;
+            $statement = oci_parse($conexao, $sql_text);
+
+            oci_bind_by_name($statement, ":CD", $cardapio,-1);
+            oci_bind_by_name($statement, ":CDTP", $tipo_prato,-1);
+
+            oci_execute($statement);
+            while($row = oci_fetch_array($statement, OCI_ASSOC)){
+                $cpp = new Cardapio_Por_Prato();
+
+
+                include_once '../beans/Tipo_Refeicao.class.php';
+                include_once '../beans/Cardapio.class.php';
+                include_once '../beans/Tipo_Prato.class.php';
+                include_once '../beans/Prato.class.php';
+                $tp = new Tipo_Prato();
+                $prato = new Prato();
+
+                $cpp->setCardapio($row["CD_CARDAPIO"]);
+                $tp->setDescricao($row["D_TIPO_PRATO"]);
+                //  echo "Tipo de prato dao: ".$row["D_TIPO_PRATO"]."<br>";
+                $cpp->setTipo_prato($tp);
+                $prato->setCodigo($row["CD_PRATO"]);
+                $prato->setNome($row["NM_PRATO"]);
+                //   echo "Ingredientes: ".$row["DS_INGREDIENTE"];
+                $prato->setDs_ingrediente($row["DS_INGREDIENTE"]);
+                $cpp->setPrato($prato);
+                $cardapioList->addCardapio($cpp);
+            }
+            $conn->closeConnection($conexao);
+        } catch (PDOException $ex) {
+            echo "Erro: ".$ex->getMessage();
+        }
+        return $cardapioList;
+    }
+
+
+
+    public function  lista_pratos_backup($cardapio, $tipo_prato){
+        require_once 'ConnectionFactory.class.php';
+        require_once  '/servicos/CPPList.class.php';
+        require_once 'beans/Cardapio_Por_Prato.class.php';
+        $conn = new ConnectionFactory();
+        $conexao = $conn->getConnection();
+        // $cardapio = null;
+        $cardapioList = new CPPList();
+        try {
+
+            $sql_text = "    SELECT      C.CD_CARDAPIO, P.CD_PRATO, P.NM_PRATO, T.D_TIPO_PRATO, P.DS_INGREDIENTE 
+                                    FROM     DBAADV.INTRA_CARDAPIO_BACKUP C
+                                            ,DBAADV.INTRA_PRATOS              P         
+                                            ,DBAADV.INTRA_CARDAPIO            I  
+                                            ,DBAADV.INTRA_TIPO_PRATO          T
+                                 WHERE      C.CD_PRATO     = P.CD_PRATO
+                                       AND  C.CD_CARDAPIO  = I.CD_CARDAPIO
+                                       AND  P.CD_TIPO_PRATO = T.CD_TIPO_PRATO
+                                       AND  C.CD_CARDAPIO = :CD
+                                       AND  T.CD_TIPO_PRATO = :CDTP
+                                 ORDER BY P.CD_TIPO_PRATO"    ;
+            $statement = oci_parse($conexao, $sql_text);
+
+            oci_bind_by_name($statement, ":CD", $cardapio,-1);
+            oci_bind_by_name($statement, ":CDTP", $tipo_prato,-1);
+
+            oci_execute($statement);
+            while($row = oci_fetch_array($statement, OCI_ASSOC)){
+                $cpp = new Cardapio_Por_Prato();
+
+
+                include_once 'beans/Tipo_Refeicao.class.php';
+                include_once 'beans/Cardapio.class.php';
+                include_once 'beans/Tipo_Prato.class.php';
+                include_once '/beans/Prato.class.php';
+                $tp = new Tipo_Prato();
+                $prato = new Prato();
+
+                $cpp->setCardapio($row["CD_CARDAPIO"]);
+                $tp->setDescricao($row["D_TIPO_PRATO"]);
+                //  echo "Tipo de prato dao: ".$row["D_TIPO_PRATO"]."<br>";
+                $cpp->setTipo_prato($tp);
+                $prato->setCodigo($row["CD_PRATO"]);
+                $prato->setNome($row["NM_PRATO"]);
+                //   echo "Ingredientes: ".$row["DS_INGREDIENTE"];
+                $prato->setDs_ingrediente($row["DS_INGREDIENTE"]);
+                $cpp->setPrato($prato);
+                $cardapioList->addCardapio($cpp);
+            }
+            $conn->closeConnection($conexao);
+        } catch (PDOException $ex) {
+            echo "Erro: ".$ex->getMessage();
+        }
+        return $cardapioList;
+    }
+
+    public function  lista_pratos_backup_1($cardapio, $tipo_prato){
+        require_once 'ConnectionFactory.class.php';
+        require_once  '../servicos/CPPList.class.php';
+        require_once '../beans/Cardapio_Por_Prato.class.php';
+        $conn = new ConnectionFactory();
+        $conexao = $conn->getConnection();
+        // $cardapio = null;
+        $cardapioList = new CPPList();
+        try {
+
+            $sql_text = "    SELECT      C.CD_CARDAPIO, P.CD_PRATO, P.NM_PRATO, T.D_TIPO_PRATO, P.DS_INGREDIENTE 
+                                    FROM     DBAADV.INTRA_CARDAPIO_BACKUP C
+                                            ,DBAADV.INTRA_PRATOS              P         
+                                            ,DBAADV.INTRA_CARDAPIO            I  
+                                            ,DBAADV.INTRA_TIPO_PRATO          T
+                                 WHERE      C.CD_PRATO     = P.CD_PRATO
+                                       AND  C.CD_CARDAPIO  = I.CD_CARDAPIO
+                                       AND  P.CD_TIPO_PRATO = T.CD_TIPO_PRATO
+                                       AND  C.CD_CARDAPIO = :CD
+                                       AND  T.CD_TIPO_PRATO = :CDTP
+                                 ORDER BY P.CD_TIPO_PRATO"    ;
+            $statement = oci_parse($conexao, $sql_text);
+
+            oci_bind_by_name($statement, ":CD", $cardapio,-1);
+            oci_bind_by_name($statement, ":CDTP", $tipo_prato,-1);
+
+            oci_execute($statement);
+            while($row = oci_fetch_array($statement, OCI_ASSOC)){
+                $cpp = new Cardapio_Por_Prato();
+
+
+                include_once '../beans/Tipo_Refeicao.class.php';
+                include_once '../beans/Cardapio.class.php';
+                include_once '../beans/Tipo_Prato.class.php';
+                include_once '../beans/Prato.class.php';
+                $tp = new Tipo_Prato();
+                $prato = new Prato();
+
+                $cpp->setCardapio($row["CD_CARDAPIO"]);
+                $tp->setDescricao($row["D_TIPO_PRATO"]);
+                //  echo "Tipo de prato dao: ".$row["D_TIPO_PRATO"]."<br>";
+                $cpp->setTipo_prato($tp);
+                $prato->setCodigo($row["CD_PRATO"]);
+                $prato->setNome($row["NM_PRATO"]);
+                //   echo "Ingredientes: ".$row["DS_INGREDIENTE"];
+                $prato->setDs_ingrediente($row["DS_INGREDIENTE"]);
+                $cpp->setPrato($prato);
+                $cardapioList->addCardapio($cpp);
+            }
+            $conn->closeConnection($conexao);
+        } catch (PDOException $ex) {
+            echo "Erro: ".$ex->getMessage();
+        }
+        return $cardapioList;
+    }
+
+
     public function  pratos_por_cardapio($cardapio){
         require_once 'ConnectionFactory.class.php';
         require_once  '../servicos/CPPList.class.php';
@@ -230,42 +598,42 @@ class Cardapio_Por_Prato_DAO {
     }
     
     public function  lista_tipo_pratos($cardapio){
+
         require_once 'ConnectionFactory.class.php';
-        require '/servicos/TPList.class.php';
+        require_once '/servicos/TPList.class.php';
         require_once 'beans/Cardapio_Por_Prato.class.php';
+        include_once 'beans/Tipo_Refeicao.class.php';
+        include_once 'beans/Cardapio.class.php';
+        include_once 'beans/Tipo_Prato.class.php';
+        include_once '/beans/Prato.class.php';
          $conn = new ConnectionFactory();   
          $conexao = $conn->getConnection();                 
         // $cardapio = null;
          $tplist = new TPList();
          try {
              
-                 $sql_text = "    SELECT      DISTINCT T.CD_TIPO_PRATO,T.D_TIPO_PRATO
-                                FROM     DBAADV.INTRA_CARDAPIO_POR_PRATOS C
-                                        ,DBAADV.INTRA_PRATOS              P         
-                                        ,DBAADV.INTRA_CARDAPIO            I  
-                                        ,DBAADV.INTRA_TIPO_PRATO          T
-                             WHERE      C.CD_PRATO     = P.CD_PRATO
-                                   AND  C.CD_CARDAPIO  = I.CD_CARDAPIO
-                                   AND  P.CD_TIPO_PRATO = T.CD_TIPO_PRATO
-                                   AND  C.CD_CARDAPIO = :CD                           
-                            ORDER BY T.CD_TIPO_PRATO"    ;
+                 $sql_text = "    SELECT     DISTINCT T.CD_TIPO_PRATO,T.D_TIPO_PRATO
+                                    FROM     DBAADV.INTRA_CARDAPIO_TEMP C
+                                            ,DBAADV.INTRA_PRATOS              P         
+                                            ,DBAADV.INTRA_CARDAPIO            I  
+                                            ,DBAADV.INTRA_TIPO_PRATO          T
+                                     WHERE  C.CD_PRATO     = P.CD_PRATO
+                                       AND  C.CD_CARDAPIO  = I.CD_CARDAPIO
+                                       AND  P.CD_TIPO_PRATO = T.CD_TIPO_PRATO
+                                       AND  C.CD_CARDAPIO = :CD                           
+                                  ORDER BY  T.CD_TIPO_PRATO"    ;
                  $statement = oci_parse($conexao, $sql_text);
                  
                  oci_bind_by_name($statement, ":CD", $cardapio,-1);
              
               oci_execute($statement);
+            // echo "<script>alert('DAO: ".$cardapio."' )</script>";
               while($row = oci_fetch_array($statement, OCI_ASSOC)){
-                  
-                 
-                  
-                  include_once 'beans/Tipo_Refeicao.class.php';
-                  include_once 'beans/Cardapio.class.php';
-                  include_once 'beans/Tipo_Prato.class.php';
-                  include_once '/beans/Prato.class.php';
                    $tr = new Tipo_Prato();
                   
                   $tr->setCodigo($row["CD_TIPO_PRATO"]);
                   $tr->setDescricao($row["D_TIPO_PRATO"]);
+              //    echo "<script>alert('DAO: ".$row["D_TIPO_PRATO"]."' )</script>";
                   
                   $tplist->addTipo_Prato($tr);
               }
@@ -275,7 +643,151 @@ class Cardapio_Por_Prato_DAO {
          }
          return $tplist;
     }
-    
+
+
+    public function  lista_tipo_pratos_1($cardapio){
+
+        require_once 'ConnectionFactory.class.php';
+        require_once '../servicos/TPList.class.php';
+        require_once '../beans/Cardapio_Por_Prato.class.php';
+        include_once '../beans/Tipo_Refeicao.class.php';
+        include_once '../beans/Cardapio.class.php';
+        include_once '../beans/Tipo_Prato.class.php';
+        include_once '../beans/Prato.class.php';
+        $conn = new ConnectionFactory();
+        $conexao = $conn->getConnection();
+        // $cardapio = null;
+        $tplist = new TPList();
+        try {
+
+            $sql_text = "    SELECT     DISTINCT T.CD_TIPO_PRATO,T.D_TIPO_PRATO
+                                    FROM     DBAADV.INTRA_CARDAPIO_TEMP C
+                                            ,DBAADV.INTRA_PRATOS              P         
+                                            ,DBAADV.INTRA_CARDAPIO            I  
+                                            ,DBAADV.INTRA_TIPO_PRATO          T
+                                     WHERE  C.CD_PRATO     = P.CD_PRATO
+                                       AND  C.CD_CARDAPIO  = I.CD_CARDAPIO
+                                       AND  P.CD_TIPO_PRATO = T.CD_TIPO_PRATO
+                                       AND  C.CD_CARDAPIO = :CD                           
+                                  ORDER BY  T.CD_TIPO_PRATO"    ;
+            $statement = oci_parse($conexao, $sql_text);
+
+            oci_bind_by_name($statement, ":CD", $cardapio,-1);
+
+            oci_execute($statement);
+            // echo "<script>alert('DAO: ".$cardapio."' )</script>";
+            while($row = oci_fetch_array($statement, OCI_ASSOC)){
+                $tr = new Tipo_Prato();
+
+                $tr->setCodigo($row["CD_TIPO_PRATO"]);
+                $tr->setDescricao($row["D_TIPO_PRATO"]);
+                //    echo "<script>alert('DAO: ".$row["D_TIPO_PRATO"]."' )</script>";
+
+                $tplist->addTipo_Prato($tr);
+            }
+            $conn->closeConnection($conexao);
+        } catch (PDOException $ex) {
+            echo "Erro: ".$ex->getMessage();
+        }
+        return $tplist;
+    }
+
+
+    public function  lista_tipo_pratos_backup($cardapio){
+        require_once 'ConnectionFactory.class.php';
+        require_once '/servicos/TPList.class.php';
+        require_once 'beans/Cardapio_Por_Prato.class.php';
+        $conn = new ConnectionFactory();
+        $conexao = $conn->getConnection();
+        // $cardapio = null;
+        $tplist = new TPList();
+        try {
+
+            $sql_text = "    SELECT     DISTINCT T.CD_TIPO_PRATO,T.D_TIPO_PRATO
+                                    FROM     DBAADV.INTRA_CARDAPIO_BACKUP C
+                                            ,DBAADV.INTRA_PRATOS              P         
+                                            ,DBAADV.INTRA_CARDAPIO            I  
+                                            ,DBAADV.INTRA_TIPO_PRATO          T
+                                     WHERE  C.CD_PRATO     = P.CD_PRATO
+                                       AND  C.CD_CARDAPIO  = I.CD_CARDAPIO
+                                       AND  P.CD_TIPO_PRATO = T.CD_TIPO_PRATO
+                                       AND  C.CD_CARDAPIO = :CD                           
+                                  ORDER BY  T.CD_TIPO_PRATO"    ;
+            $statement = oci_parse($conexao, $sql_text);
+
+            oci_bind_by_name($statement, ":CD", $cardapio,-1);
+
+            oci_execute($statement);
+            while($row = oci_fetch_array($statement, OCI_ASSOC)){
+
+
+
+                include_once 'beans/Tipo_Refeicao.class.php';
+                include_once 'beans/Cardapio.class.php';
+                include_once 'beans/Tipo_Prato.class.php';
+                include_once '/beans/Prato.class.php';
+                $tr = new Tipo_Prato();
+
+                $tr->setCodigo($row["CD_TIPO_PRATO"]);
+                $tr->setDescricao($row["D_TIPO_PRATO"]);
+
+                $tplist->addTipo_Prato($tr);
+            }
+            $conn->closeConnection($conexao);
+        } catch (PDOException $ex) {
+            echo "Erro: ".$ex->getMessage();
+        }
+        return $tplist;
+    }
+
+    public function  lista_tipo_pratos_backup_1($cardapio){
+        require_once 'ConnectionFactory.class.php';
+        require_once '../servicos/TPList.class.php';
+        require_once '../beans/Cardapio_Por_Prato.class.php';
+        $conn = new ConnectionFactory();
+        $conexao = $conn->getConnection();
+        // $cardapio = null;
+        $tplist = new TPList();
+        try {
+
+            $sql_text = "    SELECT     DISTINCT T.CD_TIPO_PRATO,T.D_TIPO_PRATO
+                                    FROM     DBAADV.INTRA_CARDAPIO_BACKUP C
+                                            ,DBAADV.INTRA_PRATOS              P         
+                                            ,DBAADV.INTRA_CARDAPIO            I  
+                                            ,DBAADV.INTRA_TIPO_PRATO          T
+                                     WHERE  C.CD_PRATO     = P.CD_PRATO
+                                       AND  C.CD_CARDAPIO  = I.CD_CARDAPIO
+                                       AND  P.CD_TIPO_PRATO = T.CD_TIPO_PRATO
+                                       AND  C.CD_CARDAPIO = :CD                           
+                                  ORDER BY  T.CD_TIPO_PRATO"    ;
+            $statement = oci_parse($conexao, $sql_text);
+
+            oci_bind_by_name($statement, ":CD", $cardapio,-1);
+
+            oci_execute($statement);
+            while($row = oci_fetch_array($statement, OCI_ASSOC)){
+
+
+
+                include_once '../beans/Tipo_Refeicao.class.php';
+                include_once '../beans/Cardapio.class.php';
+                include_once '../beans/Tipo_Prato.class.php';
+                include_once '../beans/Prato.class.php';
+                $tr = new Tipo_Prato();
+
+                $tr->setCodigo($row["CD_TIPO_PRATO"]);
+                $tr->setDescricao($row["D_TIPO_PRATO"]);
+
+                $tplist->addTipo_Prato($tr);
+            }
+            $conn->closeConnection($conexao);
+        } catch (PDOException $ex) {
+            echo "Erro: ".$ex->getMessage();
+        }
+        return $tplist;
+    }
+
+
     public function  lista_cardapio($desc){
         require_once 'ConnectionFactory.class.php';
         require '/servicos/CardapioList.class.php';

@@ -34,6 +34,9 @@ function logar(acao){
                     if(data == 1){
                         sucesso();
                       }
+                    else if(data == 2){
+                        erroRestricao();
+                    }
                     else{
                         errosend();
                         $('input[name="senha"]').css("border-color","red").focus();
@@ -58,10 +61,16 @@ function carregando(){
         
   }
 
-  function errosend(){
+function errosend(){
         var mensagem = $('.mensagem');
         mensagem.empty().html('<p class="alert alert-danger"><strong>Opa!</strong> Por favor, verifique seu login e/ou sua senha</p>').fadeIn("fast");
 }
+
+function erroRestricao(){
+    var mensagem = $('.mensagem');
+    mensagem.empty().html('<p class="alert alert-danger"><strong>Restrito!</strong> Voc&ecirc; n&atilde;o tem permiss&atilde;o para acessar esse sistema </p>').fadeIn("fast");
+}
+
 function sucesso(msg){
         var mensagem = $('.mensagem');
         mensagem.empty().html('<p class="alert alert-success"><strong>OK.</strong> Estamos redirecionando <img src="img/loading.gif" alt="Carregando..."></p>').fadeIn("fast");                

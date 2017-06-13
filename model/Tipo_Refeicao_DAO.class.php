@@ -14,8 +14,8 @@ class Tipo_Refeicao_DAO {
         $teste = false;
         $conn = new ConnectionFactory();   
         $conexao = $conn->getConnection();
-        $sql_text = "INSERT INTO DBAADV.INTRA_TP_REFEICAO (CD_TP_REFEICAO, DS_TP_REFEICAO, DS_HORARIO_INICIAL, DS_HORARIO_FINAL, DS_PRAZO)
-		     VALUES (:CDTP, :DSTP, :DSH, :DSHF, :PRAZO)";
+        $sql_text = "INSERT INTO DBAADV.INTRA_TP_REFEICAO (CD_TP_REFEICAO, DS_TP_REFEICAO, DS_HORARIO_INICIAL, DS_HORARIO_FINAL, DS_PRAZO, DS_CANCELAMENTO)
+		     VALUES (:CDTP, :DSTP, :DSH, :DSHF, :PRAZO, :CANCELAMENTO)";
         try {
             echo "Nome: ".
             $codigo = $this->getCodigo();
@@ -23,12 +23,14 @@ class Tipo_Refeicao_DAO {
             $horario = $tp->getHorarioInicial();
             $horafinal = $tp->getHorarioFinal();
             $prazo     = $tp->getPrazo();
+            $cancelamento = $tp->getCancelar();
             $statement = oci_parse($conexao, $sql_text);
             oci_bind_by_name($statement, ":CDTP", $codigo);
 	    oci_bind_by_name($statement, ":DSTP", $descricao);
             oci_bind_by_name($statement, ":DSH", $horario);
             oci_bind_by_name($statement, ":DSHF", $horafinal);
             oci_bind_by_name($statement, ":PRAZO", $prazo);
+            oci_bind_by_name($statement, ":CANCELAMENTO", $cancelamento);
             oci_execute($statement,  OCI_COMMIT_ON_SUCCESS);
 	    $teste = true;
             $conn->closeConnection($conexao);
@@ -44,17 +46,21 @@ class Tipo_Refeicao_DAO {
         $conn = new ConnectionFactory();   
         $teste = false;
         $conexao = $conn->getConnection();
-        $sql_text = "UPDATE DBAADV.INTRA_TP_REFEICAO SET DS_TP_REFEICAO = :DSTP, DS_HORARIO_INICIAL = :DSH,  DS_HORARIO_FINAL = :DSHF WHERE CD_TP_REFEICAO = :CDTP ";
+        $sql_text = "UPDATE DBAADV.INTRA_TP_REFEICAO SET DS_TP_REFEICAO = :DSTP, DS_HORARIO_INICIAL = :DSH,  DS_HORARIO_FINAL = :DSHF, DS_PRAZO = :PRAZO, DS_CANCELAMENTO = :CANCELAMENTO WHERE CD_TP_REFEICAO = :CDTP ";
         try {
             $codigo = $tp->getCodigo();
             $descricao = $tp->getDescricao();
             $horario = $tp->getHorarioInicial();
             $horariof = $tp->getHorarioFinal();
+            $prazo    = $tp->getPrazo();
+            $cancelamento = $tp->getCancelar();
             $statement = oci_parse($conexao, $sql_text);
             oci_bind_by_name($statement, ":CDTP", $codigo);
 	    oci_bind_by_name($statement, ":DSTP", $descricao);
             oci_bind_by_name($statement, ":DSH", $horario);
             oci_bind_by_name($statement, ":DSHF", $horariof);
+            oci_bind_by_name($statement, ":PRAZO", $prazo);
+            oci_bind_by_name($statement, ":CANCELAMENTO", $cancelamento);
             oci_execute($statement,  OCI_COMMIT_ON_SUCCESS);
             $teste = true;
             $conn->closeConnection($conexao);
@@ -146,8 +152,11 @@ class Tipo_Refeicao_DAO {
                                 I.CD_TP_REFEICAO
                                 ,I.DS_TP_REFEICAO
                                 ,I.DS_HORARIO_INICIAL || ' ÀS ' || I.DS_HORARIO_FINAL DS_HORARIO
+                                ,I.DS_PRAZO
+                                ,I.DS_CANCELAMENTO
                               FROM DBAADV.INTRA_TP_REFEICAO I
-                              WHERE I.DS_TP_REFEICAO LIKE :DSTP ";
+                              WHERE I.DS_TP_REFEICAO LIKE :DSTP 
+                              ORDER BY 2";
                  $statement = oci_parse($conexao, $sql_text);
                  $parametro = "%".$desc."%";
                  oci_bind_by_name($statement, ":DSTP", $parametro,-1);
@@ -156,17 +165,26 @@ class Tipo_Refeicao_DAO {
                                 I.CD_TP_REFEICAO
                                 ,I.DS_TP_REFEICAO
                                 ,I.DS_HORARIO_INICIAL || ' ÀS ' || I.DS_HORARIO_FINAL DS_HORARIO
+                                ,I.DS_PRAZO
+                                ,I.DS_CANCELAMENTO
                               FROM DBAADV.INTRA_TP_REFEICAO I
-                              ORDER BY 1
+                              ORDER BY 2 
                              ";
                  $statement = oci_parse($conexao, $sql_text);	
              }
               oci_execute($statement);
               while($row = oci_fetch_array($statement, OCI_ASSOC)){
+                  if(isset($row["DS_PRAZO"])){
+                      $prazo = $row["DS_PRAZO"];
+                  }else{
+                      $prazo = "";
+                  }
                   $tipo = new Tipo_Refeicao(); 
                   $tipo->setCodigo($row["CD_TP_REFEICAO"]);
-                  $tipo->setDescricao($row["DS_TP_REFEICAO"]);
+                  $tipo->setDescricao(mb_strtoupper($row["DS_TP_REFEICAO"], 'UTF8'));
                   $tipo->setHorarioInicial($row["DS_HORARIO"]);
+                  $tipo->setPrazo($prazo);
+                  $tipo->setCancelar($row['DS_CANCELAMENTO']);
                   $tipoList->addTipo_Refeicao($tipo);
               }
                $conn->closeConnection($conexao);
@@ -189,11 +207,18 @@ class Tipo_Refeicao_DAO {
             oci_bind_by_name($statement, ":CDTP", $id);
             oci_execute($statement);
             if($row = oci_fetch_array($statement, OCI_ASSOC)){
+                if(isset($row["DS_PRAZO"])){
+                    $prazo = $row["DS_PRAZO"];
+                }else{
+                    $prazo = "";
+                }
                 $tipo = new Tipo_Refeicao();
                 $tipo->setCodigo($row["CD_TP_REFEICAO"]);
                 $tipo->setDescricao($row["DS_TP_REFEICAO"]);
                 $tipo->setHorarioInicial($row["DS_HORARIO_INICIAL"]);
                 $tipo->setHorarioFinal($row["DS_HORARIO_FINAL"]);
+                $tipo->setPrazo($prazo);
+                $tipo->setCancelar($row['DS_CANCELAMENTO']);
                 
             }
             $conn->closeConnection($conexao);
@@ -242,5 +267,70 @@ class Tipo_Refeicao_DAO {
         }
         return $i;
     }
+    
+    
+     public function  getDadosRefeicao($cod, $data){
+          $p= new PDO('odbc:Driver={SQL Server};Server=10.51.27.28;Database=MONITWIN; Uid=ham;Pwd=mix1844');
+      //  $p= new PDO('odbc:Driver={SQL Server};Server=10.51.26.2;Database=APS; Uid=sa;Pwd=1844');
+          $ptr = $this->getCodigoRefeicao($cod);
+          
+          $stmt = $p->prepare("
+                          SELECT PTR_CODIGO TIPO
+                           , CONVERT( CHAR(10), TRF_DATA, 103 ) Data
+                           , TRF_QTDCONSUMIDA Entradas
+                           , TRF_QTDRUIM + TRF_QTDBOA Saidas
+                           , (TRF_QTDCONSUMIDA - (TRF_QTDBOA + TRF_QTDRUIM)) Presentes
+                           , cast(cast(TRF_QTDBOA as numeric(10,2))*100/(TRF_QTDBOA + TRF_QTDRUIM)
+                               as numeric(10,2)) Satisfacao
+                        FROM CL_TOTAIS_REFEICAO
+                       WHERE PTR_CODIGO in ($ptr) 
+                         AND CONVERT( CHAR(10), TRF_DATA, 103 ) = $data
+                  ");
+          //$stmt->bindParam(':codigo', $usuario,PDO::PARAM_STR);      
+          $retorno = $stmt->execute();
+          
+                if($retorno > 0){
+                    $result = $stmt->fetch();
+                    //echo $result['Nome'];
+                    $monitor = new Monitor();
+                    $monitor->setEntrada($result['Entradas']);
+                    $monitor->setPresentes($result['Presentes']);
+                    $monitor->setSaida($result['Saidas']);
+                    $monitor->setSatisfacao($result['Satisfacao']);
+                }else{
+                    $monitor=  null;
+                    $p = null;
+                }
+          return $result;    
+    }
+    
+    public function  getCodigoRefeicao($cd){
+         require_once  'ConnectionFactory.class.php';
+         $conn = new ConnectionFactory();   
+         $conexao = $conn->getConnection();
+         $i = 0;
+         $sql_text = "SELECT 
+                        CASE 
+                          WHEN '25' = :CD
+                           THEN 02
+                          WHEN '70' = :CD   
+                            THEN 03
+                         END TIPO     
+                     FROM DUAL";
+         try {
+           $stmt = oci_parse($conexao, $sql_text);                                            
+           
+           oci_bind_by_name($stmt, ":CD", $cd);
+           oci_execute($stmt);
+           if ($row = oci_fetch_array($stmt, OCI_ASSOC)){
+                $i = $row['TIPO']; 
+            }
+            $conn->closeConnection($conexao);
+        } catch (PDOException $ex) {
+           echo " Erro: ".$ex->getMessage();
+        }
+        return $i;
+    }
+    
     
 } // fim da classe

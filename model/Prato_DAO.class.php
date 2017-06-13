@@ -19,7 +19,7 @@ class Prato_DAO {
         try {
            // echo "Nome: ".
             $codigo      = $this->getCodigo();
-            $descricao   = $tp->getNome();
+            $descricao   = mb_strtoupper($tp->getNome(),'UTF8');
             $prato        = $tp->getTipo_prato();
             $ingrediente = $tp->getDs_ingrediente();
             $statement   = oci_parse($conexao, $sql_text);
@@ -145,12 +145,12 @@ class Prato_DAO {
          $pratoList = new PratoList();
          try {
              if($desc != ""){
-                 $sql_text = "SELECT * FROM DBAADV.INTRA_PRATOS I, DBAADV.INTRA_TIPO_PRATO T WHERE I.NM_PRATO LIKE :DSTP AND I.CD_TIPO_PRATO = T.CD_TIPO_PRATO";
+                 $sql_text = "SELECT * FROM DBAADV.INTRA_PRATOS I, DBAADV.INTRA_TIPO_PRATO T WHERE I.NM_PRATO LIKE :DSTP AND I.CD_TIPO_PRATO = T.CD_TIPO_PRATO ORDER BY 2 ASC";
                  $statement = oci_parse($conexao, $sql_text);
                  $parametro = "%".$desc."%";
-                 oci_bind_by_name($statement, ":DSTP", $parametro,-1);
+                 oci_bind_by_name($statement, ":DSTP", $parametro);
              }else{
-                 $sql_text = "SELECT * FROM DBAADV.INTRA_PRATOS I, DBAADV.INTRA_TIPO_PRATO T WHERE I.CD_TIPO_PRATO = T.CD_TIPO_PRATO ORDER BY 1";
+                 $sql_text = "SELECT * FROM DBAADV.INTRA_PRATOS I, DBAADV.INTRA_TIPO_PRATO T WHERE I.CD_TIPO_PRATO = T.CD_TIPO_PRATO ORDER BY 2";
                  $statement = oci_parse($conexao, $sql_text);	
              }
               oci_execute($statement);
@@ -161,11 +161,54 @@ class Prato_DAO {
                   $prato->setNome($row["NM_PRATO"]);
                   $tipo_prato = new Tipo_Prato();
                   $tipo_prato->setCodigo($row["CD_TIPO_PRATO"]);
-                  $tipo_prato->setDescricao($row["D_TIPO_PRATO"]);
+                  $tipo_prato->setDescricao(utf8_decode($row["D_TIPO_PRATO"]));
                   $prato->setTipo_prato($tipo_prato);
                   $prato->setDs_ingrediente($row["DS_INGREDIENTE"]);
                   $pratoList->addPrato($prato);
               }
+               $conn->closeConnection($conexao);
+         } catch (PDOException $ex) {
+               echo "Erro: ".$ex->getMessage();
+         }
+         return $pratoList;
+    }
+     
+    
+    public function  lista_prato_combo($desc){
+        require_once 'ConnectionFactory.class.php';
+        require '/servicos/PratoList.class.php';
+        require_once 'beans/Prato.class.php';
+         $conn = new ConnectionFactory();   
+         $conexao = $conn->getConnection();                 
+         echo "<script>console.log('Tipo de prato dao: $desc');</script>";
+         $pratoList = new PratoList();
+         try {
+             
+                 $sql_text = "SELECT * 
+                                FROM DBAADV.INTRA_PRATOS I, 
+                                     DBAADV.INTRA_TIPO_PRATO T 
+                                WHERE I.CD_TIPO_PRATO = :CD_TIPO
+                                     AND I.CD_TIPO_PRATO = T.CD_TIPO_PRATO 
+                                     ORDER BY 2 ASC";
+                 $statement = oci_parse($conexao, $sql_text);
+                 
+                 oci_bind_by_name($statement, ":CD_TIPO", $desc,-1);
+             
+              oci_execute($statement);
+              while($row = oci_fetch_array($statement, OCI_ASSOC)){
+                  $prato = new Prato(); 
+                  include_once 'beans/Tipo_Prato.class.php';
+                  
+                  $prato->setCodigo($row["CD_PRATO"]);
+                  $prato->setNome($row["NM_PRATO"]);
+                  $tipo_prato = new Tipo_Prato();
+                  $tipo_prato->setCodigo($row["CD_TIPO_PRATO"]);
+                  $tipo_prato->setDescricao(strtoupper($row["D_TIPO_PRATO"]));
+                  $prato->setTipo_prato($tipo_prato);
+                  $prato->setDs_ingrediente($row["DS_INGREDIENTE"]);
+                  $pratoList->addPrato($prato);
+              }
+              echo "<script>console.log('sai do enquanto ou nem entrou');</script>";
                $conn->closeConnection($conexao);
          } catch (PDOException $ex) {
                echo "Erro: ".$ex->getMessage();

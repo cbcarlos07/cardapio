@@ -126,7 +126,7 @@ class Tipo_Prato_DAO {
     
     public function  lista_tipo($desc){
         require_once 'ConnectionFactory.class.php';
-        require '/servicos/TPList.class.php';
+        require_once '/servicos/TPList.class.php';
         require_once 'beans/Tipo_Prato.class.php';
          $conn = new ConnectionFactory();   
          $conexao = $conn->getConnection();                 
@@ -134,19 +134,19 @@ class Tipo_Prato_DAO {
          $tipoList = new TPList();
          try {
              if($desc != ""){
-                 $sql_text = "SELECT * FROM DBAADV.INTRA_TIPO_PRATO I WHERE I.D_TIPO_PRATO LIKE :DSTP ";
+                 $sql_text = "SELECT * FROM DBAADV.INTRA_TIPO_PRATO I WHERE I.D_TIPO_PRATO LIKE :DSTP ORDER BY 2 ASC";
                  $statement = oci_parse($conexao, $sql_text);
                  $parametro = "%".$desc."%";
                  oci_bind_by_name($statement, ":DSTP", $parametro,-1);
              }else{
-                 $sql_text = "SELECT * FROM DBAADV.INTRA_TIPO_PRATO I ORDER BY 1";
+                 $sql_text = "SELECT * FROM DBAADV.INTRA_TIPO_PRATO I ORDER BY 2";
                  $statement = oci_parse($conexao, $sql_text);	
              }
               oci_execute($statement);
               while($row = oci_fetch_array($statement, OCI_ASSOC)){
                   $tipo = new Tipo_Prato(); 
                   $tipo->setCodigo($row["CD_TIPO_PRATO"]);
-                  $tipo->setDescricao($row["D_TIPO_PRATO"]);
+                  $tipo->setDescricao(utf8_decode($row["D_TIPO_PRATO"]));
                   $tipoList->addTipo_Prato($tipo);
               }
                $conn->closeConnection($conexao);

@@ -26,7 +26,7 @@
         <link href="css/style.css" rel="stylesheet">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <link href="src/facebox.css" media="screen" rel="stylesheet" type="text/css" />
-        
+        <link rel="stylesheet" href="css/jquery.datetimepicker.min.css">
         <link href="css/example.css" media="screen" rel="stylesheet" type="text/css" />
         <script src="lib/jquery.js" type="text/javascript"></script>
         <script src="src/facebox.js" type="text/javascript"></script>
@@ -60,7 +60,11 @@
                                 <input type="hidden" name="codigo" value="<?php echo $_SESSION['codigo'] ?>">
                                     <div class="form-group">
                                         <label for="data">Data da Refei&ccedil;&atilde;o</label>
-                                        <input name="data" id="data" class="form-control" type="date" size="5" required="">
+                                        <input name="data" id="data" class="form-control"  size="5" required="">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="descricao">Descri&ccedil;&atilde;o</label>
+                                        <input name="descricao" id="descricao" class="form-control"  size="5" >
                                     </div>
                                     <div class="form-group">
                                         <label for="data">Tipo de Refei&ccedil;&atilde;o</label>
@@ -95,6 +99,19 @@
             </div>
         </div>
         <script src="js/jquery.min.js"></script>
+        <script src="js/jquery.datetimepicker.full.js"></script>
+        <script>
+            
+            $("#data").datetimepicker({
+                timepicker: false,
+                format: 'd/m/Y',
+                mask: true
+            });
+            $.datetimepicker.setLocale('pt-BR');
+           
+            
+            
+        </script>
         
         <script src="js/bootstrap.min.js"></script>
          <script language=javascript>
@@ -124,5 +141,7 @@
 //                alert("O valor é: "+comboCidades.options[comboCidades.selectedIndex].text);
 //            }
          </script>
+         
+         
     </body>
 </html>

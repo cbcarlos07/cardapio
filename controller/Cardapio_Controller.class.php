@@ -21,6 +21,7 @@ class Cardapio_Controller {
         return $teste;
     }
     public function update (Cardapio $tp){
+        require_once '../model/Cardapio_DAO.class.php';
         $td = new Cardapio_DAO();
         $teste = $td->update($tp);
         return $teste;
@@ -46,10 +47,10 @@ class Cardapio_Controller {
         return $teste;
      }
      
-     public function  lista_Cardapio($desc){
-         require 'model/Cardapio_DAO.class.php';
+     public function  lista_Cardapio($desc,$inicio, $fim){
+         require_once 'model/Cardapio_DAO.class.php';
          $td = new Cardapio_DAO();
-         $teste = $td->lista_cardapio($desc);
+         $teste = $td->lista_cardapio($desc, $inicio, $fim);
          return $teste;
      }
      
@@ -66,8 +67,9 @@ class Cardapio_Controller {
          return $teste; 
       }
      public function  contarRegistros(){
+         require_once '/model/Cardapio_DAO.class.php';
          $td = new Cardapio_DAO();
-         $teste = $td->contarRegistros($desc);
+         $teste = $td->contarRegistros();
          return $teste;
      }
      
@@ -84,4 +86,12 @@ class Cardapio_Controller {
           $teste = $td->getCodigo();
           return $teste;
      }
+
+    public function removeCardapio ($cardapio){
+        require_once '../model/Cardapio_DAO.class.php';
+        $td = new Cardapio_DAO();
+        $teste = $td->removeCardapio($cardapio);
+        return $teste;
+    }
+
 }

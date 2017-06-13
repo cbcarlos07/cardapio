@@ -59,6 +59,10 @@
                                         <input name="data" id="data" class="form-control"  size="5" required="">
                                     </div>
                                     <div class="form-group">
+                                        <label for="descricao">Descri&ccedil;&atilde;o</label>
+                                        <input name="descricao" id="descricao" class="form-control"  size="5" 
+                                    </div>
+                                    <div class="form-group">
                                         <label for="data">Tipo de Refei&ccedil;&atilde;o</label>
                                         <select name="tipo" class="form-control" required="">
                                             <option value="">Selecione</option>

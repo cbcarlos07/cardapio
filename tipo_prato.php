@@ -1,3 +1,6 @@
+<?php
+  session_start();
+?>
 
 
 <html>
@@ -27,7 +30,7 @@
     <body>
        <?php
          include ('include/div_nav.php');
-         session_start();
+         
          $_SESSION['url'] = $_SERVER['REQUEST_URI'];
        ?>
         <hr>
@@ -49,7 +52,7 @@
                                 <input type="hidden" name="acao" value="S">
                                 <div class="form-group col-md-8">
                                     <label for="tipo" class="control-label">Descri&ccedil;&atilde;o do Tipo de Refei&ccedil;&atilde;o</label>
-                                    <input id="tipo" class="form-control" placeholder="Tipo de Refei&ccedil;&atilde;o" name="descricao" required="">
+                                    <input type="text" id="tipo" class="form-control" placeholder="Tipo de Refei&ccedil;&atilde;o" name="descricao" required="">
                                     
                                 </div>
                                 <div class="form-group col-md-4">

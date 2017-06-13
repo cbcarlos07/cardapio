@@ -1,3 +1,9 @@
+<?php
+
+ if(!isset($_SESSION['usuario'])){
+     header("Location: ".$_SESSION['login']);
+ }
+?>
 
  <nav class="navbar navbar-inverse navbar-fixed-top">
             <div class="container-fluid">
@@ -8,7 +14,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="snd.php">S. N. D - Servi&ccedil;o de Card&aacute;pio</a>
+                    <a class="navbar-brand" href="snd.php">S. N. D - Servi&ccedil;o de Card&aacute;pio -  <?php echo $_SESSION['usuario']; ?></a>
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav navbar-right">

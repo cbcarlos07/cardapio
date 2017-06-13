@@ -1,13 +1,18 @@
 
+<?php
+  session_start();
+?>
 
 <html>
     <head>
         <title>Menu de Cadastro de Card&aacute;pio</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="refresh" content="120">
         <link href="img/ham.ico" rel="short icon">
         <link href="css/bootstrap.min.css" rel="stylesheet">
         <link href="css/style.css" rel="stylesheet">
+        <link href="css/agenda.css" rel="stylesheet">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <link href="src/facebox.css" media="screen" rel="stylesheet" type="text/css" />
         
@@ -27,14 +32,34 @@
     <body>
         <?php 
          include './include/div_nav.php';
-         session_start();
+         
          $_SESSION['url'] = $_SERVER['REQUEST_URI'];
-          if($_GET['codigo']){
+          if(isset($_GET['codigo'])){
           $valor = $_GET['codigo'];
+          
           $_SESSION['codigo'] = $valor;
+         
           }else{
              $valor = $_SESSION['codigo'];
+             
              $_SESSION['codigo'] = $valor;
+             
+          }
+          
+          if(isset($_GET['data'])){
+              $data = $_GET['data'];
+               $_SESSION['data'] = $data;
+          }else{
+              $data  = $_SESSION['data'];
+              $_SESSION['data'] = $data;
+          }
+          
+          if(isset($_GET['ref'])){
+              $cod_ref = $_GET['ref'];
+               $_SESSION['ref'] = $cod_ref;
+          }else{
+              $cod_ref  = $_SESSION['ref'];
+              $_SESSION['ref'] = $cod_ref;
           }
         ?>
         <hr>
@@ -52,11 +77,11 @@
                                    $url = "".$_SERVER['REQUEST_URI']."";
                                 ?>
                                 <input type="hidden" name="url" value="<?php echo $url; ?>">
-                                <input type="hidden" name="codigo" value="0">
+                                <input type="hidden" name="codigo" value="<?php echo $_SESSION['codigo']; ?>">
                                 <input type="hidden" name="acao" value="S">
                                 <div class="form-group col-md-8">
                                     <label for="tipo" class="control-label">Pesquisar Nome</label>
-                                    <input id="tipo" class="form-control" placeholder="" name="nome" >
+                                    <input id="tipo" type="text" class="form-control" placeholder="" name="nome" >
                                     
                                 </div>
                                 <div class="form-group col-md-2">
@@ -84,30 +109,44 @@
                                             
                                             if(isset($_GET['nome'])){
                                                 $nome = '%'.$_GET['nome'].'%';
+                                                
                                             }else{
                                                 $nome = '%';
                                             }
                                            
                                             $_SESSION['nome'] = $nome;
+                                            $_SESSION['codigo'] = $valor;
                                         require_once './beans/Agenda.class.php';
                                         require_once './servicos/AgendaListIterator.class.php';
                                         require_once './controller/Agenda_Controller.class.php';
                                         $ac = new Agenda_Controller();
-                                        $rs = $ac->getLista($_SESSION['codigo'], $_SESSION['nome']);
+                                        $rs = $ac->getLista($_SESSION['codigo'], strtoupper($_SESSION['nome']));
                                         
                                         $agendaList = new AgendaListIterator($rs);
                                         $agenda = new Agenda();
+                                        $qtdeAgendados = 0;
+                                        $qtdeFalta = 0;
+                                        $qtdeEntrada = 0;
                                         while($agendaList->hasNextAgenda()){
                                             $agenda = $agendaList->getNextAgenda();
-                                            
+                                            $qtdeAgendados++;
                                      ?>
                                 <tbody>
                                     <div class="example">
                                     <?php 
-                                           
+                                           $chapa = $agenda->getCod_Funcionario();
                                             echo "<tr>";
-                                            echo "   <td>".$agenda->getCod_Funcionario()."</td>";
+                                            echo "   <td>".$chapa."</td>";
+                                            $agenda_str = $ac->getAlmocou($data, $chapa, $cod_ref);
+                                            if($agenda_str == 'S'){
+                                                $qtdeEntrada++;
+                                                $status_ = "<img src='img/published.png' class=img-responsive title='Almo&ccedil;ou'>";
+                                            }else{
+                                                $qtdeFalta++;
+                                                $status_ = "<img src='img/notpublished.png' class=img-responsive title='N&atilde;o Almo&ccedil;ou'>";
+                                            }
                                             echo "   <td>".$agenda->getNm_Funcionario()."</td>";                                            
+                                            echo "   <td>".$status_."</td>";
                                             
                                             echo "</tr>";
                                         }
@@ -145,9 +184,63 @@
         </div>
    </div>
    </div>
- </form>     
-        
-        
+ </form> 
+              <?php
+                /*  require_once './controller/Tipo_Refeicao_Controller.class.php';
+                  require_once './beans/Monitor.class.php';
+                 $tipo_Refeicao_Controller = new Tipo_Refeicao_Controller();
+                 $monitor = new Monitor();
+                 
+                 $monitor = $tipo_Refeicao_Controller->getDadosRefeicao($cod_ref, $data);
+                 
+                 $qtdeEntrada = $monitor->getEntrada();
+                 $qtdeSaida   = $monitor->getSaida();
+                 $qtdePresente = $monitor->getPresentes();
+                 $satisfacao = $monitor->getSatisfacao();
+                 */
+              ?>
+              
+             
+              <div class="footer">   
+                  <div class="col-lg-1 " >
+                      <!-- Single button -->
+                        <div class="dropup">
+                          <button type="button" class="btn btn-success dropdown-toggle" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Imprimir <span class="caret"></span>
+                          </button>
+                          <ul class="dropdown-menu">
+                              <li><a href="almocaram.php?cardapio=<?php echo $_SESSION['codigo']; ?>&ref=<?php echo $_SESSION['ref']; ?>" target="_blank">Almo&ccedil;aram</a></li>
+                              <li><a href="naoalmocou.php?cardapio=<?php echo $_SESSION['codigo']; ?>&ref=<?php echo $_SESSION['ref']; ?>" target="_blank">N&atilde;o Almo&ccedil;aram</a></li>                            
+                          </ul>
+                        </div>
+                  </div>    
+                <div id="resumo" class="col-lg-10" >
+                    <!--
+                      <div id="agendados" class="col-lg-2">
+                          <p><b>Total Agendados:&nbsp;</b><?php //echo $qtdeAgendados; ?></p>
+                      </div>
+                    <div id="Faltantes" class="col-lg-2">
+                        <p><b>Total Faltaram:&nbsp;</b><?php //echo $qtdeFalta; ?></p>
+                     </div>
+                    <div id="Faltantes" class="col-lg-2">
+                        <p><b>Total Entrada:</b><?php //echo $qtdeEntrada; ?></p>
+                     </div>
+                    <div id="Faltantes" class="col-lg-2">
+                        <p><b>Total Sa&iacute;da:</b><?php //echo $qtdeSaida; ?></p>
+                     </div>
+                    <div id="Faltantes" class="col-lg-2">
+                        <p><b>Total Presentes:</b><?php //echo $qtdePresente; ?></p>
+                     </div>
+                    <div id="Faltantes" class="col-lg-2">
+                        <p><b>% Satisfa&ccedil;&atilde;o:</b><?php //echo $satisfacao; ?></p>
+                     </div>
+                    
+                    -->
+                </div>
+                <div class="col-lg-1 "></div>    
+           
+        </div>
+       
         <script src="js/jquery.min.js"></script>
         
         <script src="js/bootstrap.min.js"></script>

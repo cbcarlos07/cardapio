@@ -1,4 +1,6 @@
-
+<?php
+  session_start();
+?>
 
 <html>
     <head>
@@ -27,7 +29,7 @@
     <body>
          <?php
            include ('include/div_nav.php');
-           session_start();
+           
            $_SESSION['url'] = $_SERVER['REQUEST_URI'];
          ?>
         <hr>
@@ -39,7 +41,7 @@
                 <div class="col-md-12">
                     <div class="text-center"><h1>TIPOS DE REFEI&Ccedil;&Atilde;O</h1></div>
                     <div class="container">
-                        <div id="main1" class="row">
+                        <div id="main1" class="row col-md-12">
                             <form action="acao/tr_action.php" method="POST">
                                 <?php 
                                    $url = "".$_SERVER['REQUEST_URI']."";
@@ -49,9 +51,9 @@
                                 <input type="hidden" name="url" value="<?php echo $url; ?>">
                                 <input type="hidden" name="codigo" value="0">
                                 <input type="hidden" name="acao" value="S">
-                                <div class="form-group col-md-5">
+                                <div class="form-group col-md-4">
                                     <label for="tipo" class="control-label">Descri&ccedil;&atilde;o do Tipo de Refei&ccedil;&atilde;o</label>
-                                    <input id="tipo" class="form-control" placeholder="Tipo de Refei&ccedil;&atilde;o" name="descricao" required="" >
+                                    <input type="text" id="tipo" class="form-control" placeholder="Tipo de Refei&ccedil;&atilde;o" name="descricao" required="" >
                                     
                                 </div>
                                 <div class="col-md-2">
@@ -62,9 +64,17 @@
                                     <label for="hora" class="control-label">Hor&aacute;rio Final</label>
                                     <input name="horafinal" data-format="hh:mm" id="datepicker1" class="form-control" placeholder="Ex.: 14:00" name="horafinal" required="">
                                 </div>
-                                <div class="col-md-2">
+                                <div class="col-md-1">
                                     <label for="hora" class="control-label">Prazo</label>
-                                    <input name="prazo" data-format="hh:mm" id="prazo" class="form-control" placeholder="Ex.: 24:00" name="prazo" required="">
+
+                                    <input type="text" name="prazo" class="form-control" onkeypress="return somenteNumero(event)" title="Somente n&uacute;meros inteiros s&atilde;o permitidos" placeholder="15"/>
+
+                                </div>
+                                <div class="col-md-1">
+                                    <label for="cancelamento" class="control-label">Cancelar</label>
+
+                                    <input id="cancelamento"  type="text" name="cancelamento" class="form-control" onkeypress="return somenteNumero(event)" title="Somente n&uacute;meros inteiros s&atilde;o permitidos" placeholder="12"/>
+
                                 </div>
                                 <div class="form-group col-md-2">
                                     
@@ -72,7 +82,7 @@
                                 </div>
                             </form>
                         </div>
-                        <div class="table-responsive row">
+                        <div class="table-responsive row col-md-12">
                             
                             <table class="table table-action">
                                 <thead>
@@ -80,6 +90,8 @@
                                         <th class="t-small">Id</th>
                                         <th class="t-small">Descri&ccedil;&atilde;o</th>
                                         <th class="t-small">Hor&aacute;rio</th>
+                                        <th class="t-small">Prazo /h</th>
+                                        <th class="t-small">Cancelamento</th>
                                 
                                     </tr>                                    
                                 </thead>
@@ -101,8 +113,10 @@
                                             $var = $tipo->getCodigo()."|".$url;
                                             echo "<tr>";
                                             echo "   <td>".$tipo->getCodigo()."</td>";
-                                            echo "   <td><a href='tip_altera_refeicao.php?codigo=$var' rel='facebox[.bolder]' >".$tipo->getDescricao()."</a></td>";                                            
+                                            echo "   <td><a href='tip_altera_refeicao.php?codigo=$var' rel='facebox[.bolder]' >".strtoupper($tipo->getDescricao())."</a></td>";                                            
                                             echo "   <td>".$tipo->getHorarioInicial()."</td>";
+                                            echo "   <td>".$tipo->getPrazo().":00</td>";
+                                            echo "   <td>".$tipo->getCancelar().":00</td>";
                                             echo "   <td>
                                                         <button data-nome='".$tipo->getDescricao()."' data-id='".$tipo->getCodigo()."' class='delete btn btn-danger'>Excluir</button>
                                                         <a href='tip_altera_refeicao.php?codigo=$var' rel='facebox[.bolder]'  class='btn btn-warning'>Alterar </a></td>";
@@ -148,7 +162,7 @@
                 allowTimes:[
                             '06:15', '07:00', '07:15', 
                             '11:00', '11:15', '14:00', '14:15', '21:00',
-                            '22:00'
+                            '22:00','23:00'
                            ],
                 mask: true           
                            
@@ -166,7 +180,7 @@
                 allowTimes:[
                             '06:15', '07:00', '07:15', 
                             '11:00', '11:15', '14:00', '14:15', '21:00',
-                            '22:00'
+                            '22:00','23:00'
                            ],
                 mask: true           
             });
@@ -174,6 +188,7 @@
             
             
         </script>
+        
         
         <script src="js/bootstrap.min.js"></script>
          <script language=javascript>
@@ -193,6 +208,15 @@
                 $('#myModal').modal('show'); // modal aparece
           });
          </script>
-         
+         <script language='JavaScript'>
+            function somenteNumero(e){
+                var tecla=(window.event)?event.keyCode:e.which;   
+                if((tecla>47 && tecla<58)) return true;
+                else{
+                    if (tecla==8 || tecla==0) return true;
+                    else  return false;
+                }
+            }
+         </script>
     </body>
 </html>

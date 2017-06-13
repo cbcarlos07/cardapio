@@ -11,7 +11,7 @@
  *
  * @author CARLOS
  */
-echo "<meta charset='UTF-8'>";
+//echo "<meta charset='UTF-8'>";
 require '../controller/Tipo_Refeicao_Controller.class.php';
 require '../beans/Tipo_Refeicao.class.php';
 if(isset($_POST['codigo']))
@@ -39,6 +39,12 @@ $horaf     = $_POST['horafinal'];
 $prazo     = $_POST['prazo'];
 }
 
+
+if(isset($_POST['cancelamento'])){
+    $cancelar = $_POST['cancelamento'];
+}else{
+    $cancelar = "";
+}
 
 if($acao == 'S' || $acao == 'A'){
     $descricao = $_POST['descricao'];
@@ -91,12 +97,14 @@ function inserir(){
     global $horai;
     global $horaf;
     global $prazo;
+    global $cancelar;
     $tc   = new Tipo_Refeicao_Controller();
     $tipo = new Tipo_Refeicao();
     $tipo->setDescricao(strtoupper($descricao));
     $tipo->setHorarioInicial($horai);
     $tipo->setHorarioFinal($horaf);
     $tipo->setPrazo($prazo);
+    $tipo->setCancelar($cancelar);
     $tste = $tc->insert($tipo);
     if($tste){
         $dominio = $_SERVER['HTTP_HOST'];
@@ -111,6 +119,8 @@ function alterar(){
     global $url;
     global $horai;
     global $horaf;
+    global $prazo;
+    global $cancelar;
     echo "Url: ".$url;
     echo "<br> Codigo: $id, hora final: $horaf";
     $tc   = new Tipo_Refeicao_Controller();
@@ -119,6 +129,8 @@ function alterar(){
     $tipo->setDescricao(strtoupper($descricao));
     $tipo->setHorarioInicial($horai);
     $tipo->setHorarioFinal($horaf);
+    $tipo->setPrazo($prazo);
+    $tipo->setCancelar($cancelar);
     $tste = $tc->update($tipo);
     if($tste){
         $dominio = $_SERVER['HTTP_HOST'];
